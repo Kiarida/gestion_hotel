@@ -3,7 +3,6 @@
 .classpath
 .project
 .settings
-.bin
 
 
 
@@ -11,7 +10,6 @@
 .mtj.tmp/
 
 # Package Files #
-
 *.war
 *.ear
 
