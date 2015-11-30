@@ -1,8 +1,9 @@
+*.class
 .DS_Store
 .classpath
 .project
 .settings
-
+/bin
 
 
 # Mobile Tools for Java (J2ME)
