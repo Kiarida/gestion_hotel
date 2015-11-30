@@ -30,13 +30,14 @@ public class Gestion_hotel {
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
 	
-		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4){
+		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5){
 			System.out.println(reponse);
 			System.out.println("Bienvenue dans le système. \n\n");
 			System.out.println("1. Consulter la liste des hôtels.");
 			System.out.println("2. Faire une réservation.");
 			System.out.println("3. Consulter les clients.");
 			System.out.println("4. Création fichier client.");
+			System.out.println("5. Création d'un hôtel.");
 			reponse = input.nextInt();
 			
 			
@@ -54,15 +55,47 @@ public class Gestion_hotel {
 		case 3:
 			System.out.println("Consultation des clients");
 			parc.consultClients(connexion);
-			
 			break;
 		case 4:
 			System.out.println("Affichage des clients");
 			demandeclient(connexion);
+			break;
+		case 5:
+			System.out.println("Création d'un hôtel");
+			demandecreatehotel(connexion, parc);
+			break;
 			
 		}
 		
 		
+		
+	}
+	//Interroge l'utilisateur pour la création d'un hôtel
+	public static void demandecreatehotel(Connect connexion, Parc parc) throws SQLException{
+		Scanner sc = new Scanner(System.in);
+		String reponse = null;
+		System.out.println("Veuillez entrer la classe de l'hôtel (1/2/3/4)");
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		int classe = Integer.parseInt(reponse);
+		
+		System.out.println("Veuillez entrer le nom de l'hôtel");
+		reponse = null;
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		String nom = reponse;
+		
+		System.out.println("Veuillez entrer l'adresse de l'hôtel");
+		reponse = null;
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		String adresse = reponse;
+		
+		Hotel hotel = new Hotel(classe,nom,adresse);
+		parc.creationHotel(connexion,hotel);
 		
 	}
 	

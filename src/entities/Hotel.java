@@ -13,7 +13,15 @@ public class Hotel {
 	private String adresse;
 	public int id_classe;
 	
+	public Hotel(){
+		
+	}
 	
+	public Hotel (int id_classe, String nom, String adresse){
+		this.id_classe = id_classe;
+		this.nom = nom;
+		this.adresse = adresse;
+	}
 	public int getId() {
 		return id;
 	}

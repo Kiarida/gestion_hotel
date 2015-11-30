@@ -7,6 +7,14 @@ import java.sql.Statement;
 import database.Connect;
 
 public class Parc {
+	
+	//Création d'un hôtel dans la BDD
+	public void creationHotel(Connect connexion, Hotel hotel) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "INSERT INTO hotel (classe_id, nom, adresse) VALUES ("+hotel.getClasse()+",'"+hotel.getNom()+"','"+hotel.getAdresse()+"')";
+		state.executeUpdate(sql);
+	}
 
 	public void listeHotel(Connect connexion) throws SQLException{
 		ResultSet rs = null;
