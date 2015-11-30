@@ -1,4 +1,3 @@
-*.class
 .DS_Store
 .classpath
 .project
@@ -6,12 +5,10 @@
 /bin
 
 
-
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-
 *.war
 *.ear
 
