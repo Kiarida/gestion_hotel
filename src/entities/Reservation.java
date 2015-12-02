@@ -108,8 +108,24 @@ public class Reservation {
 	public int findReservationByClient(Connect connexion, Client client) throws SQLException{
 		connexion.connection();
 		Statement state =  connexion.getConnect().createStatement();
-		//String sql = "SELECT * FROM reservation WHERE "
+		String sql = "SELECT * FROM reservation WHERE client_id = "+client.getId();
+		ResultSet rs = state.executeQuery(sql);
+		if(rs.next()){
+			
+			int id = rs.getInt("id");
+			
+		}
+		connexion.getConnect().close();
 		return id;
+	}
+	
+	public void editReservation(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "UPDATE reservation SET nb_pers="+this.nb_pers+", chambre_id = "+this.id_chambre+", date_debut = "+this.date_deb+", date_fin = "+this.date_fin+"";
+		state.executeUpdate(sql);
+		
+		connexion.getConnect().close();
 	}
 		
 }

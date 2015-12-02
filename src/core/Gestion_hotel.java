@@ -31,7 +31,7 @@ public class Gestion_hotel {
 		
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
-	
+		//while(reponse != 10){
 		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6){
 			System.out.println(reponse);
 			System.out.println("Bienvenue dans le système. \n\n");
@@ -42,6 +42,7 @@ public class Gestion_hotel {
 			System.out.println("5. Création d'un hôtel.");
 			System.out.println("6. Edition d'un hôtel");
 			System.out.println("7. Modification ou annulation d'une réservation");
+			System.out.println("10. Quitter");
 			reponse = input.nextInt();
 			
 			
@@ -127,6 +128,7 @@ public class Gestion_hotel {
 		
 		Hotel hotel = new Hotel(classe,nom,adresse);
 		parc.creationHotel(connexion,hotel);
+		sc.close();
 		
 	}
 	public static void demandeedithotel(Connect connexion, Parc parc) throws SQLException{
@@ -196,6 +198,7 @@ public class Gestion_hotel {
 		
 		Client c = new Client(nom, prenom, adresse, ville, naissance);
 		c.createClient(connexion);
+		sc2.close();
 	}
 	
 	public static void demandeReservation(Connect connexion, Parc parc) throws SQLException, ParseException{
@@ -214,19 +217,13 @@ public class Gestion_hotel {
 		while(response_date == null){
 			response_date = sc_res.nextLine();
 		}
-		
 		String date = response_date;
-        
-        
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
 		java.util.Date date_debut_temp= sdf.parse(date);
-		
 		Date date_debut = new Date(date_debut_temp.getTime());
 		
 		System.out.println("Entrez la date de fin de votre séjour (format jj/mm/aaaa) : ");
-		
-		 response_date = null;
+		response_date = null;
 		while(response_date == null){
 			response_date = sc_res.nextLine();
 		}
@@ -274,6 +271,7 @@ public class Gestion_hotel {
 		
 		Reservation reservation = new Reservation(id_client, nb_pers, date_debut, date_fin, true, id_chambre );
 		reservation.createReservation(connexion);
+		sc_res.close();
 	}
 
 }
