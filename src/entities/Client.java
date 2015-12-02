@@ -27,6 +27,12 @@ public class Client {
 		this.naissance = naissance;
 	}
 	
+	public Client(String nom, String prenom, String naissance){
+		this.nom = nom;
+		this.prenom = prenom;
+		this.naissance = naissance;
+	}
+	
 	public int getId() {
 		return id;
 	}

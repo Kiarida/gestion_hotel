@@ -105,6 +105,14 @@ public class Reservation {
 		
 	}
 	
-	
-	
+	public int findReservationByClient(Connect connexion, Client client) throws SQLException{
+		connexion.connection();
+		Statement state =  connexion.getConnect().createStatement();
+		//String sql = "SELECT * FROM reservation WHERE "
+		return id;
+	}
+		
 }
+	
+	
+	

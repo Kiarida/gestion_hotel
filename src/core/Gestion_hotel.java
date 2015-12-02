@@ -38,6 +38,7 @@ public class Gestion_hotel {
 			System.out.println("3. Consulter les clients.");
 			System.out.println("4. Création fichier client.");
 			System.out.println("5. Création d'un hôtel.");
+			System.out.println("6. Modification ou annulation d'une réservation");
 			reponse = input.nextInt();
 			
 			
@@ -64,12 +65,35 @@ public class Gestion_hotel {
 			System.out.println("Création d'un hôtel");
 			demandecreatehotel(connexion, parc);
 			break;
-			
+		case 6:
+			System.out.println("Edition d'une réservation");
+			demandemodifreservation(connexion);
 		}
 		
 		
 		
 	}
+	
+	public static void demandemodifreservation(Connect connexion){
+		Scanner sc = new Scanner(System.in);
+		String response = null;
+		System.out.println("Possédez-vous votre numéro de réservation ? Oui (O)/Non (N)");
+		while(response != "O" && response != "N"){
+			response = sc.nextLine();
+		}
+		if(response == "O"){
+			response = null;
+			System.out.println("Entrez votre numéro de réservation");
+			
+		}
+		else if(response == "N"){
+			response = null;
+			System.out.println("Entrez votre nom, votre prénom et votre date de naissance (format : nom;prenom;jj/mm/aaaa");
+			
+		}
+	}
+	
+	
 	//Interroge l'utilisateur pour la création d'un hôtel
 	public static void demandecreatehotel(Connect connexion, Parc parc) throws SQLException{
 		Scanner sc = new Scanner(System.in);
