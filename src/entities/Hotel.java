@@ -22,6 +22,13 @@ public class Hotel {
 		this.nom = nom;
 		this.adresse = adresse;
 	}
+	
+	public Hotel(int id, int id_classe, String nom, String adresse){
+		this.id = id;
+		this.id_classe = id_classe;
+		this.nom = nom;
+		this.adresse = adresse;
+	}
 	public int getId() {
 		return id;
 	}
@@ -45,6 +52,20 @@ public class Hotel {
 	}
 	public void setClasse(int id_classe) {
 		this.id_classe = id_classe;
+	}
+	
+	//Récupérer l'id de la classe en fonction du nombre d'étoiles
+	public int getIdClasseEtoiles(Connect connexion, int nb_etoiles) throws SQLException{
+		int classe = 0;
+		ResultSet rs = null;
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "SELECT id FROM classe WHERE nb_etoiles = "+nb_etoiles+"";
+		rs = state.executeQuery(sql);
+		while(rs.next()){
+			classe = rs.getInt("id");
+		}
+		return classe;
 	}
 	
 	//Liste des chambres disponibles à une date donnée
