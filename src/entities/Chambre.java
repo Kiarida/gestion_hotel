@@ -12,6 +12,16 @@ public class Chambre {
 	public int id_hotel;
 	public int id_categorie;
 	
+	public Chambre() {
+		
+	}
+	
+	public Chambre (int num_chambre, int id_hotel, int id_categorie){
+		this.num_chambre = num_chambre;
+		this.id_hotel = id_hotel;
+		this.id_categorie = id_categorie;
+	}
+	
 	public int getId() {
 		return id;
 	}

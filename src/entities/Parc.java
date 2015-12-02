@@ -14,6 +14,16 @@ public class Parc {
 		Statement state = connexion.getConnect().createStatement();
 		String sql = "INSERT INTO hotel (classe_id, nom, adresse) VALUES ("+hotel.getClasse()+",'"+hotel.getNom()+"','"+hotel.getAdresse()+"')";
 		state.executeUpdate(sql);
+		connexion.getConnect().close();
+	}
+	
+	public void modifierHotel(Connect connexion, Hotel hotel) throws SQLException{
+		ResultSet rs = null;
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "UPDATE hotel SET classe_id = "+hotel.getIdClasseEtoiles(connexion, hotel.getClasse())+",nom = '"+hotel.getNom()+"',adresse = '"+hotel.getAdresse()+"' WHERE id = "+hotel.getId()+"";
+		state.executeUpdate(sql);
+		connexion.getConnect().close();
 	}
 
 	public void listeHotel(Connect connexion) throws SQLException{
@@ -25,7 +35,7 @@ public class Parc {
 		while(rs.next())
 		{
 		   
-		    System.out.println(rs.getInt("id")+". "+rs.getString("nom")+" - "+rs.getString("adresse")+"");
+		    System.out.println(rs.getInt("id")+". "+rs.getInt("nb_etoiles")+" étoiles - "+rs.getString("nom")+" - "+rs.getString("adresse")+"");
 		   
 		}
 		connexion.getConnect().close();
@@ -45,7 +55,7 @@ public class Parc {
 		    System.out.println(rs.getString("adresse")+" ");
 		    System.out.println(rs.getString("ville"));
 		}
-	
+		connexion.getConnect().close();
 	}
 	
 }

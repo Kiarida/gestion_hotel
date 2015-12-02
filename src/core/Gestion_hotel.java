@@ -4,7 +4,9 @@ package core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Scanner;
@@ -30,7 +32,7 @@ public class Gestion_hotel {
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
 	
-		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5){
+		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6){
 			System.out.println(reponse);
 			System.out.println("Bienvenue dans le système. \n\n");
 			System.out.println("1. Consulter la liste des hôtels.");
@@ -38,7 +40,8 @@ public class Gestion_hotel {
 			System.out.println("3. Consulter les clients.");
 			System.out.println("4. Création fichier client.");
 			System.out.println("5. Création d'un hôtel.");
-			System.out.println("6. Modification ou annulation d'une réservation");
+			System.out.println("6. Edition d'un hôtel");
+			System.out.println("7. Modification ou annulation d'une réservation");
 			reponse = input.nextInt();
 			
 			
@@ -65,7 +68,11 @@ public class Gestion_hotel {
 			System.out.println("Création d'un hôtel");
 			demandecreatehotel(connexion, parc);
 			break;
-		case 6:
+		case 6: 
+			System.out.println("Edition d'un hôtel");
+			demandeedithotel(connexion, parc);
+			break;
+		case 7:
 			System.out.println("Edition d'une réservation");
 			demandemodifreservation(connexion);
 		}
@@ -121,6 +128,26 @@ public class Gestion_hotel {
 		Hotel hotel = new Hotel(classe,nom,adresse);
 		parc.creationHotel(connexion,hotel);
 		
+	}
+	public static void demandeedithotel(Connect connexion, Parc parc) throws SQLException{
+		Scanner sc = new Scanner(System.in);
+		String reponse = null;
+		parc.listeHotel(connexion);
+		System.out.println("Choisissez le numéro de l'hôtel à éditer.");
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		String id_hotel = reponse;
+		reponse = null;
+		System.out.println("Entrez le nombre d'étoiles, le nom et l'adresse de l'hôtel séparés par un /.");
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		String[] reponses = reponse.split("/");
+		sc.close();
+		Hotel hotel = new Hotel(Integer.parseInt(id_hotel), Integer.parseInt(reponses[0]),reponses[1],reponses[2]);
+		hotel.getIdClasseEtoiles(connexion, hotel.getClasse());
+		parc.modifierHotel(connexion, hotel);
 	}
 	
 	public static void demandeclient(Connect connexion) throws SQLException{
