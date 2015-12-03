@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 import database.Connect;
 
@@ -54,6 +55,61 @@ public class Hotel {
 		this.id_classe = id_classe;
 	}
 	
+	//Ajout d'une chambre pour l'hôtel
+	public void ajoutChambre(Connect connexion, Parc parc) throws SQLException{
+		parc.listeHotel(connexion);
+		Scanner sc = new Scanner(System.in);
+		int reponse = -1;
+		System.out.println("Entrez le numéro de l'hôtel");
+		while(reponse == -1){
+			reponse = sc.nextInt();
+		}
+		this.id = reponse;
+		int num_chambre = compterChambre(connexion) + 1;
+		listeCategorie(connexion);
+		reponse = -1;
+		
+		while(reponse == -1){
+			reponse = sc.nextInt();
+		}
+		Statement state = connexion.getConnect().createStatement();
+		Chambre chambre = new Chambre(num_chambre,this.id,reponse);
+		chambre.createChambre(connexion);
+		connexion.getConnect().close();
+		
+	}
+	public void editChambre(Connect connexion, Parc parc) throws SQLException{
+		parc.listeHotel(connexion);
+		Scanner sc = new Scanner(System.in);
+		int reponse = -1;
+		System.out.println("Entrez le numéro de l'hôtel");
+		while(reponse == -1){
+			reponse = sc.nextInt();
+		}
+		this.id = reponse;
+		reponse = -1;
+		System.out.println("Liste des chambres dans l'hôtel");
+		listeChambres(connexion);
+		System.out.println("Quelle chambre voulez-vous modifier ?");
+		while(reponse == -1){
+			reponse = sc.nextInt();
+		}
+		
+		listeCategorie(connexion);
+	}
+	
+	public int compterChambre(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "SELECT COUNT(*) AS rawcount FROM chambre WHERE hotel_id = "+this.id+"";
+		ResultSet rs = state.executeQuery(sql);
+		int totalChambre = 0;
+		while(rs.next()){
+			totalChambre = rs.getInt("rawcount");
+		}
+		return totalChambre;
+	}
+	
 	//Récupérer l'id de la classe en fonction du nombre d'étoiles
 	public int getIdClasseEtoiles(Connect connexion, int nb_etoiles) throws SQLException{
 		int classe = 0;
@@ -66,6 +122,32 @@ public class Hotel {
 			classe = rs.getInt("id");
 		}
 		return classe;
+	}
+	
+	//Liste des catégories de chambres disponibles pour un hôtel
+	public void listeCategorie(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "SELECT * FROM tarif_chambre INNER JOIN hotel ON tarif_chambre.classe_id = hotel.classe_id INNER JOIN categorie ON categorie.id = tarif_chambre.categorie_id WHERE hotel.id = "+this.id+"";
+		ResultSet rs = state.executeQuery(sql);
+		System.out.println("Sélectionner le numéro de la catégorie disponible");
+		while(rs.next()){
+			System.out.println(rs.getInt("categorie_id")+" - "+rs.getString("libelle"));
+		}
+	}
+	
+	//Liste des chambres
+	public void listeChambres(Connect connexion) throws SQLException{
+		ResultSet rs = null;
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "SELECT num_chambre, categorie.libelle FROM chambre "
+				+ "JOIN categorie ON chambre.categorie_id = categorie.id "
+				+ "WHERE chambre.hotel_id = "+this.id+"";
+		rs = state.executeQuery(sql);
+		while(rs.next()){
+			System.out.println(rs.getString("num_chambre")+" - "+rs.getString("libelle"));
+		}
 	}
 	
 	//Liste des chambres disponibles à une date donnée

@@ -59,4 +59,20 @@ public class Chambre {
 		return id;
 		
 	}
+	//Enregistre une chambre dans la BDD
+	public void createChambre(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "INSERT into chambre  (hotel_id, categorie_id, num_chambre)" + "VALUES ("+this.id_hotel+", "+this.id_categorie+", "+this.num_chambre+")";
+		state.executeUpdate(sql);
+		connexion.getConnect();
+	}
+	
+	//Modifier une chambre dans la BDD
+	/*public void modifChambre(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "UPDATE chambre SET categorie_id ="
+	}
+	*/
 }
