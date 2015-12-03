@@ -62,7 +62,7 @@ public class Gestion_hotel {
 			System.out.println("Liste des hôtels : ");
 			//Client c2 = new Client("bla", "blab", "bla","bla");
 			//c2.testFunction(connexion);
-			break;
+			//break;
 		case 2:
 			System.out.println("Réservation");
 			demandeReservation(connexion, parc);
@@ -261,7 +261,7 @@ public class Gestion_hotel {
 			reponse = sc.nextLine();
 		}
 		String[] reponses = reponse.split("/");
-		sc.close();
+		//sc.close();
 		Hotel hotel = new Hotel(Integer.parseInt(id_hotel), Integer.parseInt(reponses[0]),reponses[1],reponses[2]);
 		hotel.getIdClasseEtoiles(connexion, hotel.getClasse());
 		parc.modifierHotel(connexion, hotel);
