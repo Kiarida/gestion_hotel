@@ -49,11 +49,7 @@ public class Parc {
 		rs = state.executeQuery(sql);
 		while(rs.next())
 		{
-		    System.out.println(rs.getString("id")+" ");
-		    System.out.println(rs.getString("nom")+" ");
-		    System.out.println(rs.getString("prenom")+" - ");
-		    System.out.println(rs.getString("adresse")+" ");
-		    System.out.println(rs.getString("ville"));
+		    System.out.println(rs.getString("id")+" "+rs.getString("nom")+" "+rs.getString("prenom")+" - "+rs.getString("adresse")+" "+rs.getString("ville"));
 		}
 		connexion.getConnect().close();
 	}

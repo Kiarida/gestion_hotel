@@ -4,9 +4,12 @@ package entities;
 
 
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import database.Connect;
 
@@ -33,6 +36,19 @@ public class Client {
 		this.naissance = naissance;
 	}
 	
+	public Client() {
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	public String getNaissance(){
+		return naissance;
+	}
+	
+	public void setNaissance(String naissance){
+		this.naissance = naissance;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -72,6 +88,56 @@ public class Client {
 		connexion.getConnect().close();
 	}
 	
+	public void findAllReservationByClient(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state =  connexion.getConnect().createStatement();
+		String sql = "SELECT * FROM reservation WHERE client_id = "+this.getId();
+		ResultSet rs = state.executeQuery(sql);
+		while(rs.next()){
+			
+			System.out.println("Numéro de réservation : "+rs.getInt("id"));
+			
+		}
+		connexion.getConnect().close();
+		//return id;
+	}
+	
+	public HashMap<Integer, ArrayList<Date>> findReservationByClient(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state =  connexion.getConnect().createStatement();
+		String[][] array = null;
+		String sql = "SELECT * FROM reservation  LEFT JOIN chambre on reservation.chambre_id = chambre.id LEFT JOIN hotel ON chambre.hotel_id = hotel.id WHERE client_id = "+this.getId()+" AND date_deb > NOW()";
+		ResultSet rs = state.executeQuery(sql);
+		System.out.println(sql);
+		HashMap<Integer, ArrayList<Date>> hashmap = new HashMap<Integer, ArrayList<Date>>();
+		while(rs.next()){
+			//array[rs.getInt("id")].
+			ArrayList<Date> array2 = new ArrayList<>();
+			array2.add(0, rs.getDate("date_deb"));
+			array2.add(1, rs.getDate("date_fin"));
+			hashmap.put(rs.getInt("id"), array2);
+			hashmap.toString();
+			System.out.println("Réservation n°"+rs.getInt("id")+" - "+rs.getString("nom")+" - du "+rs.getString("date_deb")+" au "+rs.getString("date_fin"));
+			
+		}
+		connexion.getConnect().close();
+		return hashmap;
+	}
+	
+	public Client findClientByParams(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state =  connexion.getConnect().createStatement();
+		String sql = "SELECT * FROM client WHERE nom ='"+this.getNom()+"' AND prenom ='"+this.getPrenom()+"' AND naissance = '"+this.getNaissance()+"'";
+		ResultSet rs = state.executeQuery(sql);
+		
+		while(rs.next()){
+			this.setId(rs.getInt("id"));
+		}
+		connexion.getConnect().close();
+		return this;
+		
+	}
+
 	
 	
 	

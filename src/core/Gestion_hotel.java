@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import database.Connect;
@@ -28,11 +30,18 @@ public class Gestion_hotel {
 		
 		Connect connexion = new Connect();
 		Parc parc = new Parc();
+		afficherMenu(connexion, parc);
 		
+		//while(reponse != 10){
+		
+		
+		
+	}
+	
+	public static void afficherMenu(Connect connexion, Parc parc) throws SQLException, ParseException{
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
-		//while(reponse != 10){
-		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6){
+		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6 && reponse != 7 && reponse != 10){
 			System.out.println(reponse);
 			System.out.println("Bienvenue dans le système. \n\n");
 			System.out.println("1. Consulter la liste des hôtels.");
@@ -47,6 +56,7 @@ public class Gestion_hotel {
 			
 			
 		}
+	
 		switch(reponse){
 		case 1:
 			System.out.println("Liste des hôtels : ");
@@ -56,51 +66,155 @@ public class Gestion_hotel {
 		case 2:
 			System.out.println("Réservation");
 			demandeReservation(connexion, parc);
-			break;
+			afficherMenu(connexion, parc);
+			//break;
 		case 3:
 			System.out.println("Consultation des clients");
 			parc.consultClients(connexion);
-			break;
+			afficherMenu(connexion, parc);
+			//break;
 		case 4:
 			System.out.println("Affichage des clients");
 			demandeclient(connexion);
-			break;
+			afficherMenu(connexion, parc);
+			//break;
 		case 5:
 			System.out.println("Création d'un hôtel");
 			demandecreatehotel(connexion, parc);
-			break;
+			afficherMenu(connexion, parc);
+			//break;
 		case 6: 
 			System.out.println("Edition d'un hôtel");
 			demandeedithotel(connexion, parc);
-			break;
+			afficherMenu(connexion, parc);
+			//break;
 		case 7:
 			System.out.println("Edition d'une réservation");
-			demandemodifreservation(connexion);
+			demandemodifreservation(connexion, parc);
+			afficherMenu(connexion, parc);
+			//break;
+		case 10:
+			break;
 		}
-		
-		
 		
 	}
 	
-	public static void demandemodifreservation(Connect connexion){
+	public static void demandemodifreservation(Connect connexion, Parc parc) throws SQLException, ParseException{
 		Scanner sc = new Scanner(System.in);
-		String response = null;
+		String response = "";
+		Client c = new Client();
+		Reservation reservation = new Reservation();
 		System.out.println("Possédez-vous votre numéro de réservation ? Oui (O)/Non (N)");
-		while(response != "O" && response != "N"){
+		while(!response.equals("O") && !response.equals("N")){
 			response = sc.nextLine();
 		}
-		if(response == "O"){
-			response = null;
+		if(response.equals("O")){
+			int response_res = -1;
 			System.out.println("Entrez votre numéro de réservation");
 			
-		}
-		else if(response == "N"){
-			response = null;
-			System.out.println("Entrez votre nom, votre prénom et votre date de naissance (format : nom;prenom;jj/mm/aaaa");
+			while(response_res == -1){
+				response_res = sc.nextInt();
+			}
+			reservation.setId(response_res);
+			reservation.getReservationById(connexion);
+			System.out.println(reservation.getDate_deb());
 			
 		}
+		else if(response.equals("N")){
+			System.out.println("NON N");
+			response = null;
+			System.out.println("Entrez votre nom, votre prénom et votre date de naissance (format : nom;prenom;jj/mm/aaaa");
+			while(response == null){
+				response = sc.nextLine();
+			}
+			
+			String[] chaine = response.split(";");
+			c.setNom(chaine[0]);
+			c.setPrenom(chaine[1]);
+			c.setNaissance(chaine[2]);
+			c.findClientByParams(connexion);
+			HashMap<Integer, ArrayList<Date>> hash = c.findReservationByClient(connexion);
+			int response_res = -1;
+			System.out.println("Taper le numéro de la réservation que vous souhaitez éditer : ");
+			while(response_res == -1){
+				response_res =sc.nextInt();
+			}
+			ArrayList<Date> array = hash.get(response_res);
+			reservation.setId(response_res);
+			reservation.setDate_deb(array.get(0));
+			reservation.setDate_fin(array.get(1));
+			
+		}
+		
+		menuEditReservation(connexion, parc, reservation);
 	}
 	
+	
+	
+	public static void menuEditReservation(Connect connexion, Parc parc, Reservation reservation) throws SQLException, ParseException{
+		Scanner sc = new Scanner(System.in);
+		int response = -1;
+		System.out.println("Choisissez la propriété à éditer : ");
+		System.out.println("1. Dates de la réservation");
+		System.out.println("2. Lieu de la réservation");
+		System.out.println("3. Nombre de personnes");
+		System.out.println("4. Revenir au menu précédent");
+		while(response != 1 && response != 2 && response != 3 && response != 4){
+			response = sc.nextInt();
+			
+			
+		}
+		
+		switch(response){
+		case 1:
+			System.out.println("Dates de réservation. Entrez la date de début du séjour et la date de fin du séjour au format dd/mm/aaaa-dd/mm/aaaa :");
+			String response_date=null;
+			sc.nextLine();
+			//System.out.println()
+			while(response_date == null){
+				response_date=sc.nextLine();
+			}
+			String[] date = response_date.split("-");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
+			java.util.Date date_debut_temp= sdf.parse(date[0]);
+			java.util.Date date_fin_temp= sdf.parse(date[1]);
+			Date date_debut = new Date(date_debut_temp.getTime());
+			Date date_fin = new Date(date_fin_temp.getTime());
+			reservation.setDate_deb(date_debut);
+			reservation.setDate_fin(date_fin);
+			reservation.editReservation(connexion, "dates");
+			menuEditReservation(connexion, parc, reservation);
+		
+		case 2:
+			System.out.println("Lieu de réservation :");
+			System.out.println("Choisissez un hôtel :");
+			parc.listeHotel(connexion);
+			int response_lieu=0;
+			while(response_lieu == 0){
+				response_lieu=sc.nextInt();
+			}
+			int id_hotel = response_lieu;
+			Hotel h = new Hotel();
+			//h.listeChambresDispo(connexion, id_hotel, date_deb, date_fin);
+			System.out.println("Choisissez une chambre :");
+			reservation.editReservation(connexion, "lieu");
+			menuEditReservation(connexion, parc, reservation);
+		case 3:
+			System.out.println("Nombre de personnes : entrez le nombre de personnes (1 ou 2) :");
+			int response_personne=0;
+			while(response_personne == 0){
+				response_personne=sc.nextInt();
+			}
+			reservation.setNb_pers(response_personne);
+			reservation.editReservation(connexion, "personnes");
+			menuEditReservation(connexion, parc, reservation);
+		case 4:
+			break;
+		}
+		
+		
+		//sc.close();
+	}
 	
 	//Interroge l'utilisateur pour la création d'un hôtel
 	public static void demandecreatehotel(Connect connexion, Parc parc) throws SQLException{
@@ -128,9 +242,10 @@ public class Gestion_hotel {
 		
 		Hotel hotel = new Hotel(classe,nom,adresse);
 		parc.creationHotel(connexion,hotel);
-		sc.close();
+		//sc.close();
 		
 	}
+	
 	public static void demandeedithotel(Connect connexion, Parc parc) throws SQLException{
 		Scanner sc = new Scanner(System.in);
 		String reponse = null;
@@ -198,7 +313,7 @@ public class Gestion_hotel {
 		
 		Client c = new Client(nom, prenom, adresse, ville, naissance);
 		c.createClient(connexion);
-		sc2.close();
+		//sc2.close();
 	}
 	
 	public static void demandeReservation(Connect connexion, Parc parc) throws SQLException, ParseException{
@@ -271,7 +386,7 @@ public class Gestion_hotel {
 		
 		Reservation reservation = new Reservation(id_client, nb_pers, date_debut, date_fin, true, id_chambre );
 		reservation.createReservation(connexion);
-		sc_res.close();
+		//sc_res.close();
 	}
 
 }

@@ -77,6 +77,9 @@ public class Reservation {
 		this.id_chambre=id_chambre;
 	}
 	
+	public Reservation() {
+		// TODO Auto-generated constructor stub
+	}
 	public void createReservation(Connect connexion) throws SQLException{
 		connexion.connection();
 		Facture facture = new Facture(this.id_client,0, false);
@@ -105,29 +108,49 @@ public class Reservation {
 		
 	}
 	
-	public int findReservationByClient(Connect connexion, Client client) throws SQLException{
-		connexion.connection();
-		Statement state =  connexion.getConnect().createStatement();
-		String sql = "SELECT * FROM reservation WHERE client_id = "+client.getId();
-		ResultSet rs = state.executeQuery(sql);
-		if(rs.next()){
-			
-			int id = rs.getInt("id");
-			
-		}
-		connexion.getConnect().close();
-		return id;
-	}
 	
-	public void editReservation(Connect connexion) throws SQLException{
+	
+	/*public void editReservation(Connect connexion, String param) throws SQLException{
 		connexion.connection();
 		Statement state = connexion.getConnect().createStatement();
 		String sql = "UPDATE reservation SET nb_pers="+this.nb_pers+", chambre_id = "+this.id_chambre+", date_debut = "+this.date_deb+", date_fin = "+this.date_fin+"";
 		state.executeUpdate(sql);
 		
 		connexion.getConnect().close();
+	}*/
+	
+	public void editReservation(Connect connexion, String param1) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = null;
+		if(param1 == "dates"){
+			sql = "UPDATE reservation SET date_deb ='"+this.getDate_deb()+"', date_fin='"+this.getDate_fin()+"' WHERE id ="+this.getId()+"";
+			System.out.println(sql);
+		}
+		else if(param1 == "lieu"){
+			sql = "UPDATE reservation SET chambre_id="+this.getId_chambre()+" WHERE id ="+this.getId()+"";
+		}
+		else if(param1 == "personnes"){
+			sql = "UPDATE reservation SET nb_pers="+this.getNb_pers()+" WHERE id ="+this.getId()+"";
+		}
+		state.executeUpdate(sql);
+		
+		connexion.getConnect().close();
 	}
 		
+	
+	public void getReservationById(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = null;
+		sql = "SELECT * FROM reservation where id ="+this.getId();
+		ResultSet rs = state.executeQuery(sql);
+		while(rs.next()){
+			this.date_deb=rs.getDate("date_deb");
+			this.date_fin=rs.getDate("date_fin");
+		}
+		connexion.getConnect().close();
+	}
 }
 	
 	
