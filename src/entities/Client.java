@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import database.Connect;
 
@@ -108,7 +109,7 @@ public class Client {
 		String[][] array = null;
 		String sql = "SELECT * FROM reservation  LEFT JOIN chambre on reservation.chambre_id = chambre.id LEFT JOIN hotel ON chambre.hotel_id = hotel.id WHERE client_id = "+this.getId()+" AND date_deb > NOW()";
 		ResultSet rs = state.executeQuery(sql);
-		System.out.println(sql);
+	
 		HashMap<Integer, ArrayList<Date>> hashmap = new HashMap<Integer, ArrayList<Date>>();
 		while(rs.next()){
 			//array[rs.getInt("id")].
@@ -136,6 +137,66 @@ public class Client {
 		connexion.getConnect().close();
 		return this;
 		
+	}
+	
+	public void afficheDeleteClient(Connect connexion) throws SQLException{
+		Scanner sc = new Scanner(System.in);
+		String response = null;
+		Reservation reservation = new Reservation();
+		System.out.println("Possédez-vous le numéro de réservation ? Oui(O)/Non(N)");
+		while(response == null){
+			response = sc.nextLine();
+		}
+		if(response.equals("O")){
+			int response_res = -1;
+			System.out.println("Entrez votre numéro de réservation");
+			
+			while(response_res == -1){
+				response_res = sc.nextInt();
+			}
+			reservation.setId(response_res);
+			
+		}
+		else if(response.equals("N")){
+			
+			response = null;
+			System.out.println("Entrez votre numéro de client OU votre nom, votre prénom et votre date de naissance (format : nom;prenom;jj/mm/aaaa)");
+			while(response == null){
+				response = sc.nextLine();
+			}
+			String[] chaine = response.split(";");
+			if(chaine.length > 1){
+				System.out.println("On connait pas le numéro");
+			
+				this.setNom(chaine[0]);
+				this.setPrenom(chaine[1]);
+				this.setNaissance(chaine[2]);
+				this.findClientByParams(connexion);
+				HashMap<Integer, ArrayList<Date>> hash = this.findReservationByClient(connexion);
+				int response_res = -1;
+				System.out.println("Taper le numéro de la réservation que vous souhaitez supprimer : ");
+				while(response_res == -1){
+					response_res =sc.nextInt();
+				}
+				ArrayList<Date> array = hash.get(response_res);
+				reservation.setId(response_res);
+				reservation.deleteReservation(connexion);
+				
+			}
+			else{
+				this.id = Integer.parseInt(response);
+				HashMap<Integer, ArrayList<Date>> hash = this.findReservationByClient(connexion);
+				int response_res = -1;
+				System.out.println("Taper le numéro de la réservation que vous souhaitez éditer : ");
+				while(response_res == -1){
+					response_res =sc.nextInt();
+				}
+				ArrayList<Date> array = hash.get(response_res);
+				reservation.setId(response_res);
+				reservation.deleteReservation(connexion);
+			}
+		}
+			
 	}
 
 	

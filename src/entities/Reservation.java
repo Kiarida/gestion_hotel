@@ -4,7 +4,9 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import database.Connect;
 
@@ -80,15 +82,28 @@ public class Reservation {
 	public Reservation() {
 		// TODO Auto-generated constructor stub
 	}
-	public void createReservation(Connect connexion) throws SQLException{
+	public void createReservation(Connect connexion) throws SQLException, ParseException{
 		connexion.connection();
 		Facture facture = new Facture(this.id_client,0, false);
 		int id_facture = facture.createFacture(connexion);
 		this.id_facture = id_facture;
 		Statement state = connexion.getConnect().createStatement();
+		java.sql.Date date_today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 		
-		String sql ="INSERT into reservation (chambre_id, facture_id, client_id, nb_pers, date_deb, date_fin) "
-				+ "VALUES ("+this.id_chambre+", "+this.id_facture+", "+this.id_client+", "+this.nb_pers+", '"+this.date_deb+"', '"+this.date_fin+"')";
+		this.reservation = true;
+		//Si la date de début est celle d'aujourd'hui, alors on met le boolean reservation à faux
+		String date_form = date_today.toString();
+		
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date date_today_temp= sdf2.parse(date_form);
+		Date date_to = new Date(date_today_temp.getTime());
+
+		if(this.date_deb.compareTo(date_to)==0){
+			this.reservation = false;
+		}
+		
+		String sql ="INSERT into reservation (chambre_id, facture_id, client_id, nb_pers, date_deb, date_fin, reservation) "
+				+ "VALUES ("+this.id_chambre+", "+this.id_facture+", "+this.id_client+", "+this.nb_pers+", '"+this.date_deb+"', '"+this.date_fin+"', "+this.reservation+")";
 		
 		//Retourne la clé primaire (l'id) du nouvel enregistrement
 		state.executeUpdate(sql, state.RETURN_GENERATED_KEYS);
@@ -149,6 +164,15 @@ public class Reservation {
 			this.date_deb=rs.getDate("date_deb");
 			this.date_fin=rs.getDate("date_fin");
 		}
+		connexion.getConnect().close();
+	}
+	
+	public void deleteReservation(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = null;
+		sql = "DELETE facture FROM facture LEFT JOIN reservation ON facture_id = facture.id where reservation.id ="+this.getId(); 
+		state.executeUpdate(sql);
 		connexion.getConnect().close();
 	}
 }

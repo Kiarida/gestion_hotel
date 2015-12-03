@@ -4,9 +4,7 @@ package core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,9 +39,11 @@ public class Gestion_hotel {
 	public static void afficherMenu(Connect connexion, Parc parc) throws SQLException, ParseException{
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
-		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6 && reponse != 7 && reponse != 10){
-			System.out.println(reponse);
-			System.out.println("Bienvenue dans le système. \n\n");
+		
+		boolean shouldbreak = false;
+		//while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6 && reponse != 7 && reponse != 10){
+		while(shouldbreak == false){
+			System.out.println("\n\n Bienvenue dans le système. \n");
 			System.out.println("1. Consulter la liste des hôtels.");
 			System.out.println("2. Faire une réservation.");
 			System.out.println("3. Consulter les clients.");
@@ -51,10 +51,12 @@ public class Gestion_hotel {
 			System.out.println("5. Création d'un hôtel.");
 			System.out.println("6. Edition d'un hôtel");
 			System.out.println("7. Modification ou annulation d'une réservation");
-			System.out.println("10. Quitter");
+			System.out.println("10. Suppression d'une réservation.");
+			System.out.println("11. Quitter");
 			reponse = input.nextInt();
+			shouldbreak=true;
 			
-			
+
 		}
 	
 		switch(reponse){
@@ -62,8 +64,10 @@ public class Gestion_hotel {
 			System.out.println("Liste des hôtels : ");
 			//Client c2 = new Client("bla", "blab", "bla","bla");
 			//c2.testFunction(connexion);
+			afficherMenu(connexion, parc);
 			//break;
 		case 2:
+			System.out.println(reponse);
 			System.out.println("Réservation");
 			demandeReservation(connexion, parc);
 			afficherMenu(connexion, parc);
@@ -74,7 +78,8 @@ public class Gestion_hotel {
 			afficherMenu(connexion, parc);
 			//break;
 		case 4:
-			System.out.println("Affichage des clients");
+			System.out.println("REPONSE "+reponse);
+			System.out.println("Création client");
 			demandeclient(connexion);
 			afficherMenu(connexion, parc);
 			//break;
@@ -94,8 +99,21 @@ public class Gestion_hotel {
 			afficherMenu(connexion, parc);
 			//break;
 		case 10:
+			System.out.println("Supression d'une réservation");
+			Client c = new Client();
+			c.afficheDeleteClient(connexion);
+			afficherMenu(connexion, parc);
+		case 11:
+			System.out.println("Merci d'avoir utilisé l'interface de gestion hotelière.");
+			shouldbreak =true;
+			System.exit(0);
+			break;
+		default:
 			break;
 		}
+		shouldbreak=true;
+		
+		reponse = -1;
 		
 	}
 	
@@ -121,7 +139,7 @@ public class Gestion_hotel {
 			
 		}
 		else if(response.equals("N")){
-			System.out.println("NON N");
+			
 			response = null;
 			System.out.println("Entrez votre nom, votre prénom et votre date de naissance (format : nom;prenom;jj/mm/aaaa");
 			while(response == null){
@@ -180,6 +198,11 @@ public class Gestion_hotel {
 			java.util.Date date_fin_temp= sdf.parse(date[1]);
 			Date date_debut = new Date(date_debut_temp.getTime());
 			Date date_fin = new Date(date_fin_temp.getTime());
+			if(date_debut.after(date_fin)){
+				System.out.println("Erreur : la date de début doit être antérieure à la date de fin. Retour au menu.");
+				afficherMenu(connexion, parc);
+				
+			}
 			reservation.setDate_deb(date_debut);
 			reservation.setDate_fin(date_fin);
 			reservation.editReservation(connexion, "dates");
@@ -197,6 +220,14 @@ public class Gestion_hotel {
 			Hotel h = new Hotel();
 			//h.listeChambresDispo(connexion, id_hotel, date_deb, date_fin);
 			System.out.println("Choisissez une chambre :");
+			h.listeChambresDispo(connexion, id_hotel, reservation.getDate_deb(), reservation.getDate_fin());
+			response_lieu=0;
+			while(response_lieu == 0){
+				response_lieu=sc.nextInt();
+			}
+			Chambre chambre = new Chambre();
+			int id_chambre =chambre.getIdChambre(connexion, response_lieu, id_hotel);
+			reservation.setId_chambre(id_chambre);
 			reservation.editReservation(connexion, "lieu");
 			menuEditReservation(connexion, parc, reservation);
 		case 3:
@@ -220,7 +251,7 @@ public class Gestion_hotel {
 	public static void demandecreatehotel(Connect connexion, Parc parc) throws SQLException{
 		Scanner sc = new Scanner(System.in);
 		String reponse = null;
-		System.out.println("Veuillez entrer la classe de l'hôtel (1/2/3/4)");
+		System.out.println("Veuillez entrer la classe de l'hôtel (2/3/4)");
 		while(reponse == null){
 			reponse = sc.nextLine();
 		}
@@ -333,9 +364,11 @@ public class Gestion_hotel {
 			response_date = sc_res.nextLine();
 		}
 		String date = response_date;
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		java.util.Date date_debut_temp= sdf.parse(date);
 		Date date_debut = new Date(date_debut_temp.getTime());
+
+	
 		
 		System.out.println("Entrez la date de fin de votre séjour (format jj/mm/aaaa) : ");
 		response_date = null;
@@ -347,7 +380,11 @@ public class Gestion_hotel {
 		java.util.Date date_fin_temp= sdf.parse(date);
 		
 		Date date_fin = new Date(date_fin_temp.getTime());
-		
+		if(date_debut.after(date_fin)){
+			System.out.println("Erreur : la date de début doit être antérieure à la date de fin. Retour au menu.");
+			afficherMenu(connexion, parc);
+			
+		}
 		
 		response = -1;
 		System.out.println("Veuillez entrer le nombre de personnes (1 ou 2) : ");
@@ -383,7 +420,6 @@ public class Gestion_hotel {
 		//int id_client = 0;
 		Chambre c = new Chambre();
 		int id_chambre = c.getIdChambre(connexion, num_chambre, id_hotel);
-		
 		Reservation reservation = new Reservation(id_client, nb_pers, date_debut, date_fin, true, id_chambre );
 		reservation.createReservation(connexion);
 		//sc_res.close();
