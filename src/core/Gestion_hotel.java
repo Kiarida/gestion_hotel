@@ -39,6 +39,7 @@ public class Gestion_hotel {
 	public static void afficherMenu(Connect connexion, Parc parc) throws SQLException, ParseException{
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
+
 		
 		boolean shouldbreak = false;
 		//while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6 && reponse != 7 && reponse != 10){
@@ -51,12 +52,12 @@ public class Gestion_hotel {
 			System.out.println("5. Création d'un hôtel.");
 			System.out.println("6. Edition d'un hôtel");
 			System.out.println("7. Modification ou annulation d'une réservation");
+			System.out.println("8. Ajout d'une chambre dans un hôtel");
+			System.out.println("9. Modification d'une chambre dans un hôtel");
 			System.out.println("10. Suppression d'une réservation.");
 			System.out.println("11. Quitter");
 			reponse = input.nextInt();
 			shouldbreak=true;
-			
-
 		}
 	
 		switch(reponse){
@@ -98,6 +99,16 @@ public class Gestion_hotel {
 			demandemodifreservation(connexion, parc);
 			afficherMenu(connexion, parc);
 			//break;
+		case 8:
+			System.out.println("Ajout d'une chambre dans un hôtel");
+			Hotel hotel = new Hotel();
+			hotel.ajoutChambre(connexion, parc);
+			afficherMenu(connexion, parc);
+		case 9:
+			System.out.println("Edition d'une chambre dans un hôtel");
+			Hotel hotel2 = new Hotel();
+			hotel2.editChambre(connexion, parc);
+			afficherMenu(connexion, parc);
 		case 10:
 			System.out.println("Supression d'une réservation");
 			Client c = new Client();
