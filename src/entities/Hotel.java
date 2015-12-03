@@ -87,15 +87,21 @@ public class Hotel {
 			reponse = sc.nextInt();
 		}
 		this.id = reponse;
-		reponse = -1;
+		int num = -1;
 		System.out.println("Liste des chambres dans l'hôtel");
 		listeChambres(connexion);
 		System.out.println("Quelle chambre voulez-vous modifier ?");
-		while(reponse == -1){
-			reponse = sc.nextInt();
+		while(num == -1){
+			num = sc.nextInt();
 		}
-		
+		System.out.println("Choisissez une catégorie parmi celles disponibles");
+		int categorie = -1;
 		listeCategorie(connexion);
+		while(categorie == -1){
+			categorie = sc.nextInt();
+		}
+		Chambre chambre = new Chambre(num,this.id, categorie);
+		chambre.modifChambre(connexion);
 	}
 	
 	public int compterChambre(Connect connexion) throws SQLException{

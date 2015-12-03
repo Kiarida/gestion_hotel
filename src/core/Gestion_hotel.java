@@ -103,7 +103,8 @@ public class Gestion_hotel {
 		case 9:
 			System.out.println("Edition d'une chambre dans un hôtel");
 			Hotel hotel2 = new Hotel();
-			
+			hotel2.editChambre(connexion, parc);
+			afficherMenu(connexion, parc);
 		case 10:
 			break;
 		}
