@@ -4,7 +4,11 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 
 import database.Connect;
 
@@ -177,4 +181,56 @@ public class Hotel {
 		}
 		connexion.getConnect().close();
 	}
+	
+	public void occupationChambre(Connect connexion, Date date_debut, Date date_fin) throws SQLException{
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		HashMap<String, ArrayList<ArrayList<String>>> hashmap = new HashMap<String, ArrayList<ArrayList<String>>>();
+		String sql ="SELECT categorie.libelle, chambre.id, chambre.num_chambre, "
+				+ "(SELECT COUNT(*) FROM chambre WHERE hotel_id = 1) as total "
+				+ "FROM chambre INNER JOIN reservation ON chambre.id = reservation.chambre_id "
+				+ "INNER JOIN categorie ON chambre.categorie_id = categorie.id  WHERE "
+						+ "(reservation.date_deb BETWEEN '"+date_debut+"' AND '"+date_fin+"' "
+						+ "OR reservation.date_fin BETWEEN '"+date_debut+"' AND '"+date_fin+"') AND hotel_id ="+this.getId()+" group by chambre_id";
+		
+		ResultSet rs = state.executeQuery(sql);
+		ArrayList<ArrayList<String>> values = new ArrayList<>();
+		while(rs.next()){
+			ArrayList<String> array2 = new ArrayList<>();
+			
+			String key = rs.getString("libelle");
+			array2.add(0, rs.getString("total"));
+			array2.add(1,rs.getString("num_chambre"));
+			if(!hashmap.containsKey(key)){
+				values.clear();
+			}
+
+			values.add(0, array2);
+
+			
+			ArrayList<ArrayList<String>> candidatTmp = new ArrayList<ArrayList<String>>(values);
+
+			hashmap.put(key, candidatTmp);
+
+		}
+		
+		Set<String> cles = hashmap.keySet();
+		Iterator<String> it = cles.iterator();
+		while (it.hasNext()){
+		   String cle = it.next(); 
+		   ArrayList<ArrayList<String>> valeur = hashmap.get(cle); 
+		   System.out.println("\nCatégorie : "+cle);
+		   System.out.println("Nombre de chambres occupées : "+valeur.size()+" sur "+valeur.get(0).get(0));
+		   System.out.print("Chambres occupées : ");
+		   for (ArrayList<String> s : valeur) {
+			   System.out.print(s.get(1)+", ");
+		   }
+		   System.out.println("");
+
+		}
+		//System.out.println(hashmap.toString());
+		
+		
+		}
+		
 }

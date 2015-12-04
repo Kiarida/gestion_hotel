@@ -55,7 +55,8 @@ public class Gestion_hotel {
 			System.out.println("8. Ajout d'une chambre dans un hôtel");
 			System.out.println("9. Modification d'une chambre dans un hôtel");
 			System.out.println("10. Suppression d'une réservation.");
-			System.out.println("11. Quitter");
+			
+			System.out.println("12. Quitter");
 			reponse = input.nextInt();
 			shouldbreak=true;
 		}
@@ -115,6 +116,10 @@ public class Gestion_hotel {
 			c.afficheDeleteClient(connexion);
 			afficherMenu(connexion, parc);
 		case 11:
+			System.out.println("Vérifier l'occupation des chambres pour un jour ou une période.");
+			parc.afficherOccupationChambre(connexion);
+			afficherMenu(connexion, parc);
+		case 12:
 			System.out.println("Merci d'avoir utilisé l'interface de gestion hotelière.");
 			shouldbreak =true;
 			System.exit(0);

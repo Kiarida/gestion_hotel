@@ -1,8 +1,12 @@
 package entities;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Scanner;
 
 import database.Connect;
 
@@ -54,4 +58,39 @@ public class Parc {
 		connexion.getConnect().close();
 	}
 	
+	public void afficherOccupationChambre(Connect connexion) throws SQLException, ParseException{
+		Scanner sc = new Scanner(System.in);
+		String response = null;
+		System.out.println("Choisissez l'hôtel à consulter : ");
+		this.listeHotel(connexion);
+		while(response == null){
+			response = sc.nextLine();
+		}
+		
+		Hotel h = new Hotel();
+		h.setId(Integer.parseInt(response));
+		
+		response = null;
+		System.out.println("Entrez la date (dd/mm/aaaa) ou la période voulue (dd/mm/aaaa-dd/mm/aaaa): ");
+		while(response == null){
+			response = sc.nextLine();
+		}
+		String[] chaine = response.split("-");	
+		
+	
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		java.util.Date date_debut_temp= sdf.parse(chaine[0]);
+		Date date_debut = new Date(date_debut_temp.getTime());
+		Date date_fin = date_debut;
+		if(chaine.length>1){
+			java.util.Date date_fin_temp= sdf.parse(chaine[1]);
+			date_fin = new Date(date_fin_temp.getTime());
+		}
+		h.occupationChambre(connexion, date_debut, date_fin);
+		
+		
+		
+		
+	}
+ 	
 }
