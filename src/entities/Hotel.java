@@ -208,9 +208,9 @@ public class Hotel {
 			values.add(0, array2);
 
 			
-			ArrayList<ArrayList<String>> candidatTmp = new ArrayList<ArrayList<String>>(values);
+			ArrayList<ArrayList<String>> arrayTmp = new ArrayList<ArrayList<String>>(values);
 
-			hashmap.put(key, candidatTmp);
+			hashmap.put(key, arrayTmp);
 
 		}
 		
@@ -250,4 +250,30 @@ public class Hotel {
 		connexion.getConnect().close();
 	}
 		
+	
+	public HashMap<Integer, Prestation> getListePrestations(Connect connexion, Chambre c) throws SQLException{
+		ResultSet rs = null;
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "SELECT * FROM prestation WHERE categorie_id = "+c.getId_categorie()+" AND classe_id ="+this.getClasse()+"";
+		rs = state.executeQuery(sql);
+		System.out.println("Voici la liste des prestations proposées pour votre séjour :");
+		
+		int i =1;
+		
+		HashMap<Integer, Prestation> hashmap = new HashMap<Integer, Prestation>();
+		while(rs.next()){
+		
+			Prestation p = new Prestation();
+			p.setId(rs.getInt("id"));
+			p.setLibelle(rs.getString("libelle"));
+			p.setTarif_jour(Integer.parseInt(rs.getString("tarif_jour")));
+			hashmap.put(i, p);
+		    System.out.println(i+". "+rs.getString("libelle")+" - "+rs.getString("tarif_jour")+"€");
+		    i++;
+		   
+		}
+		connexion.getConnect().close();
+		return hashmap;
+	}
 }

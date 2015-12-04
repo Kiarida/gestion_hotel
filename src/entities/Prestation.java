@@ -38,5 +38,10 @@ public class Prestation {
 		this.id_classe = id_classe;
 	}
 	
+	public Prestation getPrestationFromLibelle(){
+		return this;
+	}
+	
+	
 	
 }

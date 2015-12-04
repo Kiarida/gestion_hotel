@@ -103,21 +103,52 @@ public class Client {
 		//return id;
 	}
 	
-	public HashMap<Integer, ArrayList<Date>> findReservationByClient(Connect connexion) throws SQLException{
+	public HashMap<Integer, ArrayList<Object>> findReservationByClient(Connect connexion) throws SQLException{
 		connexion.connection();
 		Statement state =  connexion.getConnect().createStatement();
 		String[][] array = null;
 		String sql = "SELECT * FROM reservation  LEFT JOIN chambre on reservation.chambre_id = chambre.id LEFT JOIN hotel ON chambre.hotel_id = hotel.id WHERE client_id = "+this.getId()+" AND date_deb > NOW()";
 		ResultSet rs = state.executeQuery(sql);
-	
-		HashMap<Integer, ArrayList<Date>> hashmap = new HashMap<Integer, ArrayList<Date>>();
+	System.out.println(sql);
+		HashMap<Integer, ArrayList<Object>> hashmap = new HashMap<Integer, ArrayList<Object>>();
 		while(rs.next()){
 			//array[rs.getInt("id")].
-			ArrayList<Date> array2 = new ArrayList<>();
+			ArrayList<Object> array2 = new ArrayList<>();
 			array2.add(0, rs.getDate("date_deb"));
 			array2.add(1, rs.getDate("date_fin"));
+			array2.add(2, rs.getString("hotel_id"));
+			array2.add(3, rs.getString("classe_id"));
+			array2.add(4, rs.getString("categorie_id"));
+			array2.add(5, rs.getString("facture_id"));
 			hashmap.put(rs.getInt("id"), array2);
-			hashmap.toString();
+			
+			System.out.println("Réservation n°"+rs.getInt("id")+" - "+rs.getString("nom")+" - du "+rs.getString("date_deb")+" au "+rs.getString("date_fin"));
+			
+		}
+		connexion.getConnect().close();
+		return hashmap;
+	}
+	
+	
+	public HashMap<Integer, ArrayList<Object>> findReservationsSejoursByClient(Connect connexion) throws SQLException{
+		connexion.connection();
+		Statement state =  connexion.getConnect().createStatement();
+		String[][] array = null;
+		String sql = "SELECT * FROM reservation  LEFT JOIN chambre on reservation.chambre_id = chambre.id LEFT JOIN hotel ON chambre.hotel_id = hotel.id WHERE client_id = "+this.getId()+" AND date_fin >= NOW()";
+		ResultSet rs = state.executeQuery(sql);
+	System.out.println(sql);
+		HashMap<Integer, ArrayList<Object>> hashmap = new HashMap<Integer, ArrayList<Object>>();
+		while(rs.next()){
+			//array[rs.getInt("id")].
+			ArrayList<Object> array2 = new ArrayList<>();
+			array2.add(0, rs.getDate("date_deb"));
+			array2.add(1, rs.getDate("date_fin"));
+			array2.add(2, rs.getInt("hotel_id"));
+			array2.add(3, rs.getInt("classe_id"));
+			array2.add(4, rs.getInt("categorie_id"));
+			array2.add(5, rs.getInt("facture_id"));
+			hashmap.put(rs.getInt("id"), array2);
+			
 			System.out.println("Réservation n°"+rs.getInt("id")+" - "+rs.getString("nom")+" - du "+rs.getString("date_deb")+" au "+rs.getString("date_fin"));
 			
 		}
@@ -166,37 +197,46 @@ public class Client {
 			}
 			String[] chaine = response.split(";");
 			if(chaine.length > 1){
-				System.out.println("On connait pas le numéro");
 			
 				this.setNom(chaine[0]);
 				this.setPrenom(chaine[1]);
 				this.setNaissance(chaine[2]);
 				this.findClientByParams(connexion);
-				HashMap<Integer, ArrayList<Date>> hash = this.findReservationByClient(connexion);
+				HashMap<Integer, ArrayList<Object>> hash = this.findReservationByClient(connexion);
 				int response_res = -1;
 				System.out.println("Taper le numéro de la réservation que vous souhaitez supprimer : ");
 				while(response_res == -1){
 					response_res =sc.nextInt();
 				}
-				ArrayList<Date> array = hash.get(response_res);
+				ArrayList<Object> array = hash.get(response_res);
 				reservation.setId(response_res);
 				reservation.deleteReservation(connexion);
 				
 			}
 			else{
 				this.id = Integer.parseInt(response);
-				HashMap<Integer, ArrayList<Date>> hash = this.findReservationByClient(connexion);
+				HashMap<Integer, ArrayList<Object>> hash = this.findReservationByClient(connexion);
 				int response_res = -1;
-				System.out.println("Taper le numéro de la réservation que vous souhaitez éditer : ");
+				System.out.println("Taper le numéro de la réservation que vous souhaitez supprimer : ");
 				while(response_res == -1){
 					response_res =sc.nextInt();
 				}
-				ArrayList<Date> array = hash.get(response_res);
+				ArrayList<Object> array = hash.get(response_res);
 				reservation.setId(response_res);
 				reservation.deleteReservation(connexion);
 			}
 		}
+	
 			
+	}
+	public void achatPrestation(Connect connexion, Facture f, Prestation p, int nb_jours) throws SQLException{
+		Tarif tarif = new Tarif();
+		tarif.setId_facture(f.getId());
+		tarif.setId_prestation(p.getId());
+		tarif.setNb_jours(nb_jours);
+		int total_prestation = p.getTarif_jour() * nb_jours;
+		tarif.setTotal_prest(total_prestation);
+		tarif.createTarif(connexion);
 	}
 
 	

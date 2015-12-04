@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import database.Connect;
@@ -98,26 +100,103 @@ public class Parc {
 		while(response == null){
 			response = sc.nextLine();
 		}
-		
 		Hotel h = new Hotel();
 		h.setId(Integer.parseInt(response));
-		
 		response = null;
 		System.out.println("Entrez la date voulue (dd/mm/aaaa) : ");
 		while(response == null){
 			response = sc.nextLine();
 		}
-		
-		
-	
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		java.util.Date date_debut_temp= sdf.parse(response);
 		Date date_debut = new Date(date_debut_temp.getTime());
 		
 		h.arriveesJour(connexion, date_debut);
+	
+	}
+	
+	public void afficherListePresta(Connect connexion) throws SQLException, ParseException{
+		//this.listeHotel(connexion);
+		Scanner sc = new Scanner(System.in);
+		String response = null;
+		System.out.println("Entrez votre numéro client OU votre nom, prénom et date de naissance (format nom;prenom;jj/mm/aaaa");
+		while(response == null){
+			response = sc.nextLine();
+		}
+		Client client = new Client();
+		Reservation reservation = new Reservation();
+		String[] chaine = response.split(";");
+		if(chaine.length > 1){	
+			client.setNom(chaine[0]);
+			client.setPrenom(chaine[1]);
+			client.setNaissance(chaine[2]);
+			client.findClientByParams(connexion);
+		}
+		else{
+			client.setId(Integer.parseInt(response));
+		}
+		HashMap<Integer, ArrayList<Object>> hash = client.findReservationsSejoursByClient(connexion);
+		int response_res = -1;
+		System.out.println("Choisissez une réservation ou un séjour pour y ajouter des services : ");
+		while(response_res == -1){
+			response_res =sc.nextInt();
+		}
+		
+		ArrayList<Object> array = hash.get(response_res);
+		reservation.setId(response_res);
+		reservation.setDate_deb((Date)array.get(0));
+		reservation.setDate_fin((Date)array.get(1));
+		Hotel h = new Hotel();
+		h.setId((Integer)array.get(2));
+		h.setClasse((Integer)array.get(3));
+		Facture f = new Facture((Integer)array.get(5));
+		Chambre c = new Chambre();
+		c.setId_categorie((Integer)array.get(4));
+		Prestation p = new Prestation();
+		int boucle = 0;
+		while(boucle != 10 ){
+			HashMap<Integer, Prestation> hashmap = h.getListePrestations(connexion, c);
+			response_res = -1;
+			System.out.println("10 : Retour au menu.");
+			System.out.println("Choisissez une prestation : ");
+			while(response_res == -1){
+				response_res = sc.nextInt();
+			}
+			if(response_res == 10){
+				boucle = 10;
+				break;
+			}
+			System.out.println(hashmap.toString());
+			
+			p = hashmap.get(response_res);
+			System.out.println(p.toString());
+			System.out.println("Choisissez les dates de début et de fin du service (format jj/mm/aaaa-jj/mm/aaaa) : ");
+			sc.nextLine();
+			String response_date = null;
+			while(response_date == null){
+				response_date=sc.nextLine();
+			}
+			
+			String[] date = response_date.split("-");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			java.util.Date date_debut_temp= sdf.parse(date[0]);
+			java.util.Date date_fin_temp= sdf.parse(date[1]);
+			Date date_debut = new Date(date_debut_temp.getTime());
+			Date date_fin = new Date(date_fin_temp.getTime());
+			
+			if(date_debut.after(date_fin) || date_debut.after(reservation.getDate_fin()) || date_debut.before(reservation.getDate_deb()) || date_fin.after(reservation.getDate_fin())){
+				System.out.println("Erreur : les dates ne correspondent pas. Retour au menu.");
+				break;
+			}
+			int diff = (int)((date_fin.getTime() - date_debut.getTime()) / (24 * 60 * 60 * 1000));
+			client.achatPrestation(connexion, f, p, diff);
+			
+			//boucle = sc.nextInt();
+		}
 		
 		
-		
+		//Hotel h = new Hotel();
+		//h.setId(reponse);
 		
 	}
  	

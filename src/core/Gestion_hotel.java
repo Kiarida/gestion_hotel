@@ -57,7 +57,8 @@ public class Gestion_hotel {
 			System.out.println("10. Suppression d'une réservation.");
 			System.out.println("11. Etat d'occupation des chambres pour une date ou une période.");
 			System.out.println("12. Arrivées pour une date.");
-			System.out.println("13. Quitter");
+			System.out.println("13. Achat de prestations pour un séjour ou une réservation");
+			System.out.println("14. Quitter");
 			reponse = input.nextInt();
 			shouldbreak=true;
 		}
@@ -81,7 +82,6 @@ public class Gestion_hotel {
 			//afficherMenu(connexion, parc);
 			break;
 		case 4:
-			System.out.println("REPONSE "+reponse);
 			System.out.println("Création client");
 			demandeclient(connexion);
 			//afficherMenu(connexion, parc);
@@ -130,6 +130,10 @@ public class Gestion_hotel {
 			//afficherMenu(connexion, parc);
 			break;
 		case 13:
+			System.out.println("Achat de prestation.");
+			parc.afficherListePresta(connexion);
+			break;
+		case 14:
 			System.out.println("Merci d'avoir utilisé l'interface de gestion hotelière.");
 			shouldbreak =true;
 			System.exit(0);
@@ -182,16 +186,16 @@ public class Gestion_hotel {
 			c.setPrenom(chaine[1]);
 			c.setNaissance(chaine[2]);
 			c.findClientByParams(connexion);
-			HashMap<Integer, ArrayList<Date>> hash = c.findReservationByClient(connexion);
+			HashMap<Integer, ArrayList<Object>> hash = c.findReservationByClient(connexion);
 			int response_res = -1;
 			System.out.println("Taper le numéro de la réservation que vous souhaitez éditer : ");
 			while(response_res == -1){
 				response_res =sc.nextInt();
 			}
-			ArrayList<Date> array = hash.get(response_res);
+			ArrayList<Object> array = hash.get(response_res);
 			reservation.setId(response_res);
-			reservation.setDate_deb(array.get(0));
-			reservation.setDate_fin(array.get(1));
+			reservation.setDate_deb((Date)array.get(0));
+			reservation.setDate_fin((Date)array.get(1));
 			
 		}
 		
@@ -216,7 +220,7 @@ public class Gestion_hotel {
 		
 		switch(response){
 		case 1:
-			System.out.println("Dates de réservation. Entrez la date de début du séjour et la date de fin du séjour au format dd/mm/aaaa-dd/mm/aaaa :");
+			System.out.println("Dates de réservation. Entrez la date de début du séjour et la date de fin du séjour au format jj/mm/aaaa-jj/mm/aaaa :");
 			String response_date=null;
 			sc.nextLine();
 			//System.out.println()
@@ -224,7 +228,7 @@ public class Gestion_hotel {
 				response_date=sc.nextLine();
 			}
 			String[] date = response_date.split("-");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			java.util.Date date_debut_temp= sdf.parse(date[0]);
 			java.util.Date date_fin_temp= sdf.parse(date[1]);
 			Date date_debut = new Date(date_debut_temp.getTime());
@@ -238,6 +242,7 @@ public class Gestion_hotel {
 			reservation.setDate_fin(date_fin);
 			reservation.editReservation(connexion, "dates");
 			menuEditReservation(connexion, parc, reservation);
+			break;
 		
 		case 2:
 			System.out.println("Lieu de réservation :");
@@ -261,6 +266,7 @@ public class Gestion_hotel {
 			reservation.setId_chambre(id_chambre);
 			reservation.editReservation(connexion, "lieu");
 			menuEditReservation(connexion, parc, reservation);
+			break;
 		case 3:
 			System.out.println("Nombre de personnes : entrez le nombre de personnes (1 ou 2) :");
 			int response_personne=0;
@@ -270,6 +276,7 @@ public class Gestion_hotel {
 			reservation.setNb_pers(response_personne);
 			reservation.editReservation(connexion, "personnes");
 			menuEditReservation(connexion, parc, reservation);
+			break;
 		case 4:
 			break;
 		}

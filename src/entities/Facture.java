@@ -62,6 +62,10 @@ public class Facture {
 		this.paye = paye;
 	}
 	
+	public Facture(int id) {
+		this.id=id;
+	}
+
 	public int createFacture(Connect connexion) throws SQLException{
 	
 
