@@ -55,8 +55,9 @@ public class Gestion_hotel {
 			System.out.println("8. Ajout d'une chambre dans un hôtel");
 			System.out.println("9. Modification d'une chambre dans un hôtel");
 			System.out.println("10. Suppression d'une réservation.");
-			
-			System.out.println("12. Quitter");
+			System.out.println("11. Etat d'occupation des chambres pour une date ou une période.");
+			System.out.println("12. Arrivées pour une date.");
+			System.out.println("13. Quitter");
 			reponse = input.nextInt();
 			shouldbreak=true;
 		}
@@ -66,60 +67,69 @@ public class Gestion_hotel {
 			System.out.println("Liste des hôtels : ");
 			//Client c2 = new Client("bla", "blab", "bla","bla");
 			//c2.testFunction(connexion);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 2:
 			System.out.println(reponse);
 			System.out.println("Réservation");
 			demandeReservation(connexion, parc);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 3:
 			System.out.println("Consultation des clients");
 			parc.consultClients(connexion);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 4:
 			System.out.println("REPONSE "+reponse);
 			System.out.println("Création client");
 			demandeclient(connexion);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 5:
 			System.out.println("Création d'un hôtel");
 			demandecreatehotel(connexion, parc);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 6: 
 			System.out.println("Edition d'un hôtel");
 			demandeedithotel(connexion, parc);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 7:
 			System.out.println("Edition d'une réservation");
 			demandemodifreservation(connexion, parc);
-			afficherMenu(connexion, parc);
-			//break;
+			//afficherMenu(connexion, parc);
+			break;
 		case 8:
 			System.out.println("Ajout d'une chambre dans un hôtel");
 			Hotel hotel = new Hotel();
 			hotel.ajoutChambre(connexion, parc);
-			afficherMenu(connexion, parc);
+			//afficherMenu(connexion, parc);
+			break;
 		case 9:
 			System.out.println("Edition d'une chambre dans un hôtel");
 			Hotel hotel2 = new Hotel();
 			hotel2.editChambre(connexion, parc);
-			afficherMenu(connexion, parc);
+			//afficherMenu(connexion, parc);
+			break;
 		case 10:
 			System.out.println("Supression d'une réservation");
 			Client c = new Client();
 			c.afficheDeleteClient(connexion);
-			afficherMenu(connexion, parc);
+			//afficherMenu(connexion, parc);
+			break;
 		case 11:
-			System.out.println("Vérifier l'occupation des chambres pour un jour ou une période.");
+			System.out.println("Vérifier l'occupation des chambres pour une date ou une période.");
 			parc.afficherOccupationChambre(connexion);
-			afficherMenu(connexion, parc);
+			//afficherMenu(connexion, parc);
+			break;
 		case 12:
+			System.out.println("Vérifier les arrivées pour un jour.");
+			parc.afficherArrivees(connexion);
+			//afficherMenu(connexion, parc);
+			break;
+		case 13:
 			System.out.println("Merci d'avoir utilisé l'interface de gestion hotelière.");
 			shouldbreak =true;
 			System.exit(0);
@@ -130,6 +140,11 @@ public class Gestion_hotel {
 		shouldbreak=true;
 		
 		reponse = -1;
+		System.out.println("\nTapez 1 pour revenir au menu.");
+		while(reponse == -1){
+			reponse= input.nextInt();
+		}
+		afficherMenu(connexion, parc);
 		
 	}
 	

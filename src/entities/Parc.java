@@ -88,6 +88,34 @@ public class Parc {
 		}
 		h.occupationChambre(connexion, date_debut, date_fin);
 		
+	}
+	
+	public void afficherArrivees(Connect connexion) throws SQLException, ParseException{
+		Scanner sc = new Scanner(System.in);
+		String response = null;
+		System.out.println("Choisissez l'hôtel à consulter : ");
+		this.listeHotel(connexion);
+		while(response == null){
+			response = sc.nextLine();
+		}
+		
+		Hotel h = new Hotel();
+		h.setId(Integer.parseInt(response));
+		
+		response = null;
+		System.out.println("Entrez la date voulue (dd/mm/aaaa) : ");
+		while(response == null){
+			response = sc.nextLine();
+		}
+		
+		
+	
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		java.util.Date date_debut_temp= sdf.parse(response);
+		Date date_debut = new Date(date_debut_temp.getTime());
+		
+		h.arriveesJour(connexion, date_debut);
+		
 		
 		
 		

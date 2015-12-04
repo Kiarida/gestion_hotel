@@ -228,9 +228,26 @@ public class Hotel {
 		   System.out.println("");
 
 		}
-		//System.out.println(hashmap.toString());
-		
-		
+	}
+	
+	public void arriveesJour(Connect connexion, Date date_deb) throws SQLException{
+		ResultSet rs = null;
+		connexion.connection();
+		Statement state = connexion.getConnect().createStatement();
+		String sql = "SELECT reservation.*, categorie.libelle, chambre.num_chambre, client.nom, client.prenom FROM reservation "
+				+ "INNER JOIN chambre ON chambre_id = chambre.num_chambre "
+				+ "INNER JOIN client ON reservation.client_id = client.id "
+				+ "INNER JOIN categorie ON categorie.id = chambre.categorie_id WHERE date_deb = '"+date_deb+"' AND chambre.hotel_id = "+this.id+" GROUP BY reservation.id";
+		rs = state.executeQuery(sql);
+		int i = 0;
+		while(rs.next())
+		{
+			i++;
+		    System.out.println("Réservation n°"+rs.getInt("id")+" - "+rs.getString("prenom")+" "+rs.getString("nom")+" - Chambre n°"+rs.getString("num_chambre")+" - "+rs.getString("libelle"));
+		   
 		}
+		System.out.println("Nombre d'arrivées prévues :"+i);
+		connexion.getConnect().close();
+	}
 		
 }
