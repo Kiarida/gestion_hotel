@@ -12,6 +12,7 @@ import java.util.Scanner;
 import database.Connect;
 import entities.Chambre;
 import entities.Client;
+import entities.Facture;
 import entities.Hotel;
 import entities.Parc;
 import entities.Reservation;
@@ -30,7 +31,7 @@ public class Gestion_hotel {
 		Scanner input = new Scanner(System.in);
 		int reponse = 0;
 	
-		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5){
+		while(reponse != 1 && reponse != 2 && reponse != 3 && reponse != 4 && reponse != 5 && reponse != 6){
 			System.out.println(reponse);
 			System.out.println("Bienvenue dans le système. \n\n");
 			System.out.println("1. Consulter la liste des hôtels.");
@@ -38,6 +39,7 @@ public class Gestion_hotel {
 			System.out.println("3. Consulter les clients.");
 			System.out.println("4. Création fichier client.");
 			System.out.println("5. Création d'un hôtel.");
+			System.out.println("6. Edition d'une facture.");
 			reponse = input.nextInt();
 			
 			
@@ -64,12 +66,32 @@ public class Gestion_hotel {
 			System.out.println("Création d'un hôtel");
 			demandecreatehotel(connexion, parc);
 			break;
+		case 6:
+			System.out.println("Edition de la facture d'un client");
+			demandefacture(connexion);
+			break;
 			
 		}
 		
 		
 		
 	}
+	
+	//Recherche une facture selon un id de client
+	public static void demandefacture(Connect connexion) throws SQLException{
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Veuillez entrer l'id du client associ� � la facture");
+		String reponse = null;
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		String id_client = reponse;
+		
+		Facture facture = new Facture(Integer.parseInt(id_client));
+		facture.consulterFacture(connexion,Integer.parseInt(id_client));
+		
+	}
+	
 	//Interroge l'utilisateur pour la création d'un hôtel
 	public static void demandecreatehotel(Connect connexion, Parc parc) throws SQLException{
 		Scanner sc = new Scanner(System.in);
@@ -223,6 +245,11 @@ public class Gestion_hotel {
 		
 		Reservation reservation = new Reservation(id_client, nb_pers, date_debut, date_fin, true, id_chambre );
 		reservation.createReservation(connexion);
+		
+		//infos facture
+		Facture f = new Facture();
+		f.calculFacture(connexion, id_client);
+		
 	}
 
 }

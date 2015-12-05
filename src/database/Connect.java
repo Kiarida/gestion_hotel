@@ -51,7 +51,7 @@ public class Connect {
     public void connection() throws SQLException{
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            connect = DriverManager.getConnection("jdbc:mysql://localhost:8889/gestion_hotel","root","root");
+            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/gestion_hotel","root","");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
         }

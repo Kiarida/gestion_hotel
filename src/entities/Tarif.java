@@ -1,11 +1,32 @@
 package entities;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import database.Connect;
+
 public class Tarif {
 	private int id;
 	private int nb_jours;
 	private int total_prest;
 	public int id_prestation;
 	public int id_facture;
+	Connect connexion = new Connect();
+	private int facture_id;
+	private int facture;
+	
+	public Tarif(int id, int nb_jours, int total_prest, int id_prest, int id_facture){
+		this.id = id;
+		this.nb_jours = nb_jours;
+		this.total_prest = total_prest;
+		this.id_prestation = id_prestation;
+		this.id_facture = id_facture;
+	}
+	
+	public Tarif(){
+		
+	}
 	
 	
 	public int getId() {
