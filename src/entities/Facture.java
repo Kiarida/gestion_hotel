@@ -86,8 +86,9 @@ public class Facture {
 		this.id_client = client_id;
 	}
 	
-	public int createFacture(Connect connexion) throws SQLException{
-	
+	public int createFacture(Connect connexion, Reservation r) throws SQLException{
+		
+		
 
 		Statement state = connexion.getConnect().createStatement();
 		
@@ -124,10 +125,10 @@ public class Facture {
 			id=rs3.getInt("id");
 		}
 		else{
-			System.out.println("Erreur, la facture n'a pas été récupérée.");
+			System.out.println("Erreur, la facture n'a pas ï¿½tï¿½ rï¿½cupï¿½rï¿½e.");
 		}
 
-		//Calcul du total des prestations pour une réservation donnée
+		//Calcul du total des prestations pour une rï¿½servation donnï¿½e
 		String sql = "SELECT  SUM(total_prest)FROM tarif GROUP BY facture_id HAVING facture_id="+id;
 		ResultSet rs = state.executeQuery(sql);
 		int totalprest = 0;
@@ -135,7 +136,7 @@ public class Facture {
 			totalprest = rs.getInt("SUM(total_prest)");
 		}
 	
-		System.out.println("Montant de la réservation : "+totalrecup+ "euros.");
+		System.out.println("Montant de la rï¿½servation : "+totalrecup+ "euros.");
 		System.out.println("Montant des prestations : "+totalprest+ "euros.");	
 		System.out.println("Facture_id : "+id+" client_id"+client_id);	
 		
@@ -157,11 +158,11 @@ public class Facture {
 			paye =rs4.getBoolean("paye");
 		}
 		else{
-			System.out.println("Erreur, la facture n'a pas été récupérée.");
+			System.out.println("Erreur, la facture n'a pas ï¿½tï¿½ rï¿½cupï¿½rï¿½e.");
 		}
 				
 		
-		System.out.println("Client numéro : "+client_id+" Montant total de la facture : "+totalrecup+" Statut facture : "+paye+".");
+		System.out.println("Client numï¿½ro : "+client_id+" Montant total de la facture : "+totalrecup+" Statut facture : "+paye+".");
 	}
 	
 	
@@ -171,7 +172,7 @@ public class Facture {
 		connexion.connection();
 		Statement state = connexion.getConnect().createStatement();
 		
-		//nb étoiles hotel+catégorie de chambre+durée séjour + saison
+		//nb ï¿½toiles hotel+catï¿½gorie de chambre+durï¿½e sï¿½jour + saison
 		String facture = "SELECT * FROM reservation WHERE client_id="+client_id+"";
 		ResultSet rs =state.executeQuery(facture);
 		while(rs.next()){
@@ -182,9 +183,9 @@ public class Facture {
 			date_deb = rs.getDate("date_deb");
 			date_fin = rs.getDate("date_fin");			
 		}
-		System.out.println("Date début : "+date_deb.toString()+" Date fin : "+date_fin.toString());
+		System.out.println("Date dï¿½but : "+date_deb.toString()+" Date fin : "+date_fin.toString());
 		
-		//calcul durée séjour
+		//calcul durï¿½e sï¿½jour
 		 String datediff = "SELECT DATEDIFF(date_fin,date_deb) AS diff FROM reservation WHERE client_id="+client_id+"";
 		 ResultSet rs2 =state.executeQuery(datediff);
 		 while (rs2.next()) {
@@ -192,14 +193,14 @@ public class Facture {
            }
 		 
 		
-		//calcul saison 01/10 au 30/04 -> hiver 01/05 au 30/09 -> été
+		//calcul saison 01/10 au 30/04 -> hiver 01/05 au 30/09 -> ï¿½tï¿½
 		 Date date = new Date();
 		 Calendar cal = Calendar.getInstance();
 		 cal.setTime(date_deb);
 		 int month = cal.get(Calendar.MONTH);
 		 int day = cal.get(Calendar.DAY_OF_MONTH);
 	
-		 //récupération classe_id
+		 //rï¿½cupï¿½ration classe_id
 		 
 		 String classe_id_1 = "SELECT * FROM hotel WHERE id=(SELECT hotel_id FROM chambre WHERE id="+chambre_id+")";
 		 ResultSet rsclasse_id =state.executeQuery(classe_id_1);
@@ -207,14 +208,14 @@ public class Facture {
              classe_id = rsclasse_id.getString("classe_id");
            }
 		 
-		 //récupération categorie_id
+		 //rï¿½cupï¿½ration categorie_id
 		 String categorie_id_1 = "SELECT * FROM chambre WHERE id="+chambre_id+"";
 		 ResultSet rscategorie_id =state.executeQuery(categorie_id_1);
 		 while (rscategorie_id.next()) {
 			 categorie_id = rscategorie_id.getString("categorie_id");
            }
 		 
-		 //test saison été
+		 //test saison ï¿½tï¿½
 		 if(month<10 && month>4){
 			 if(nb_personne==1){
 				 String prixtotal = "SELECT prix_h_1 FROM tarif_chambre WHERE classe_id="+classe_id+" AND categorie_id="+categorie_id;
@@ -262,10 +263,23 @@ public class Facture {
 			ResultSet rs1 = state1.getGeneratedKeys();
 			
 			
-			System.out.println("Facture générée pour client_id: "+client_id+" pour un total de: "+total+" statut paiement: "+paye);
+			System.out.println("Facture gï¿½nï¿½rï¿½e pour client_id: "+client_id+" pour un total de: "+total+" statut paiement: "+paye);
 			
 			
 
+	}
+	
+	public void calculChambre(Connect connexion, Reservation r){
+		try {
+			connexion.connection();
+			Statement state = connexion.getConnect().createStatement();
+			String sql = "SELECT MONTH(date_debut) FROM reservation WHERE id = "+r.getId()+"";
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	
