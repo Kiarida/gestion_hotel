@@ -14,6 +14,7 @@ import java.util.Scanner;
 import database.Connect;
 import entities.Chambre;
 import entities.Client;
+import entities.Facture;
 import entities.Hotel;
 import entities.Parc;
 import entities.Reservation;
@@ -285,6 +286,23 @@ public class Gestion_hotel {
 		//sc.close();
 	}
 	
+
+	//Recherche une facture selon un id de client
+	public static void demandefacture(Connect connexion) throws SQLException{
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Veuillez entrer l'id du client associ� � la facture");
+		String reponse = null;
+		while(reponse == null){
+			reponse = sc.nextLine();
+		}
+		String id_client = reponse;
+		
+		Facture facture = new Facture(Integer.parseInt(id_client));
+		facture.consulterFacture(connexion,Integer.parseInt(id_client));
+		
+	}
+	
+
 	//Interroge l'utilisateur pour la création d'un hôtel
 	public static void demandecreatehotel(Connect connexion, Parc parc) throws SQLException{
 		Scanner sc = new Scanner(System.in);
@@ -460,7 +478,8 @@ public class Gestion_hotel {
 		int id_chambre = c.getIdChambre(connexion, num_chambre, id_hotel);
 		Reservation reservation = new Reservation(id_client, nb_pers, date_debut, date_fin, true, id_chambre );
 		reservation.createReservation(connexion);
-		//sc_res.close();
+
+
 	}
 
 }
