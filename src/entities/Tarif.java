@@ -12,9 +12,6 @@ public class Tarif {
 	private int total_prest;
 	public int id_prestation;
 	public int id_facture;
-	Connect connexion = new Connect();
-	private int facture_id;
-	private int facture;
 	
 	public Tarif(int id, int nb_jours, int total_prest, int id_prest, int id_facture){
 		this.id = id;
@@ -60,22 +57,31 @@ public class Tarif {
 		this.id_facture = id_facture;
 	}
 
-	public void createTarif(Connect connexion) throws SQLException{
+	public int createTarif(Connect connexion) throws SQLException{
 		connexion.connection();
 		Statement state =  connexion.getConnect().createStatement();
 		String sql = "INSERT INTO tarif (nb_jours, total_prest, prestation_id, facture_id) "
-				+ "SELECT ("+this.nb_jours+", "+this.total_prest+", "+this.id_prestation+", "+this.id_facture+") FROM tarif "
-				+ "WHERE NOT EXISTS (SELECT * FROM tarif WHERE prestation_id ="+this.id_prestation+" AND facture_id = "+this.id_facture+" LIMIT 1";
+				+ "SELECT * FROM (SELECT "+this.nb_jours+", "+this.total_prest+", "+this.id_prestation+", "+this.id_facture+") as tmp "
+				+ "WHERE NOT EXISTS (SELECT * FROM tarif WHERE prestation_id ="+this.id_prestation+" AND facture_id = "+this.id_facture+") LIMIT 1";
+		System.out.println(sql);
 		try{
-			state.executeUpdate(sql);
-			System.out.println("Vous disposez maintenant de ce service.\n");
+			int resultat = state.executeUpdate(sql);
+			if(resultat == 0){
+				System.out.println("Vous disposez déjà de ce service");
+			}
+			else{
+				System.out.println("Vous disposez maintenant de ce service.\n");
+			}
+			return resultat;
 		}catch(SQLException e){
 
 			System.out.println("Une erreur s'est produite. Veuillez réessayer.");
 		}
 		
 		
+		
 		connexion.getConnect().close();
+		return -1;
 		
 		//return this;
 	}

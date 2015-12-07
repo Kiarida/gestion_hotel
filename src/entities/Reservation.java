@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Scanner;
 
 import database.Connect;
 
@@ -85,42 +86,68 @@ public class Reservation {
 	public void createReservation(Connect connexion) throws SQLException, ParseException{
 		connexion.connection();
 		Facture facture = new Facture(this.id_client,0, false);
-		int id_facture = facture.createFacture(connexion);
-		this.id_facture = id_facture;
-		Statement state = connexion.getConnect().createStatement();
-		java.sql.Date date_today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 		
-		this.reservation = true;
-		//Si la date de début est celle d'aujourd'hui, alors on met le boolean reservation à faux
-		String date_form = date_today.toString();
 		
-		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-		java.util.Date date_today_temp= sdf2.parse(date_form);
-		Date date_to = new Date(date_today_temp.getTime());
-
-		if(this.date_deb.compareTo(date_to)==0){
-			this.reservation = false;
+		int total = facture.createFacture(connexion, this);
+		
+		System.out.println("Devis : "+total+"€");
+		Scanner scanner = new Scanner(System.in);
+		String reponse = "";
+		System.out.println("Souhaitez-vous confirmer ? O/N");
+		while(!reponse.equals("O") && !reponse.equals("N")){
+			reponse = scanner.nextLine();
+			System.out.println("Faux");
 		}
-		
-		String sql ="INSERT into reservation (chambre_id, facture_id, client_id, nb_pers, date_deb, date_fin, reservation) "
-				+ "VALUES ("+this.id_chambre+", "+this.id_facture+", "+this.id_client+", "+this.nb_pers+", '"+this.date_deb+"', '"+this.date_fin+"', "+this.reservation+")";
-		
-		//Retourne la clé primaire (l'id) du nouvel enregistrement
-		state.executeUpdate(sql, state.RETURN_GENERATED_KEYS);
-		
-		ResultSet rs = state.getGeneratedKeys();
-		
-		if(rs.next()){
+		System.out.println("wat");
+		if(reponse == "N"){
+			System.out.println("Annulation de la procédure");
 			
-			int id = rs.getInt(1);
-			System.out.println("Réservation créée. Veuillez noter votre numéro de réservation : "+id);
 		}
 		else{
-			System.out.println("Erreur, la réservation n'a pas été créée.");
-		}
-		connexion.getConnect().close();
-
+			System.out.println("hello");
+			this.id_facture = facture.insertFacture(connexion);;
+			
+			
+			
+			
+			Statement state = connexion.getConnect().createStatement();
+			java.sql.Date date_today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+			
+			this.reservation = true;
+			//Si la date de début est celle d'aujourd'hui, alors on met le boolean reservation à faux
+			String date_form = date_today.toString();
+			
+			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date date_today_temp= sdf2.parse(date_form);
+			Date date_to = new Date(date_today_temp.getTime());
+	
+			if(this.date_deb.compareTo(date_to)==0){
+				this.reservation = false;
+			}
+			
 		
+			
+			
+			
+			String sql ="INSERT into reservation (chambre_id, facture_id, client_id, nb_pers, date_deb, date_fin, reservation) "
+					+ "VALUES ("+this.id_chambre+", "+this.id_facture+", "+this.id_client+", "+this.nb_pers+", '"+this.date_deb+"', '"+this.date_fin+"', "+this.reservation+")";
+			
+			//Retourne la clé primaire (l'id) du nouvel enregistrement
+			state.executeUpdate(sql, state.RETURN_GENERATED_KEYS);
+			
+			ResultSet rs = state.getGeneratedKeys();
+			
+			if(rs.next()){
+				
+				int id = rs.getInt(1);
+				System.out.println("Réservation créée. Veuillez noter votre numéro de réservation : "+id);
+			}
+			else{
+				System.out.println("Erreur, la réservation n'a pas été créée.");
+			}
+			connexion.getConnect().close();
+	
+		}
 	}
 	
 	

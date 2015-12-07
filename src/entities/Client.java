@@ -109,7 +109,7 @@ public class Client {
 		String[][] array = null;
 		String sql = "SELECT * FROM reservation  LEFT JOIN chambre on reservation.chambre_id = chambre.id LEFT JOIN hotel ON chambre.hotel_id = hotel.id WHERE client_id = "+this.getId()+" AND date_deb > NOW()";
 		ResultSet rs = state.executeQuery(sql);
-	System.out.println(sql);
+	
 		HashMap<Integer, ArrayList<Object>> hashmap = new HashMap<Integer, ArrayList<Object>>();
 		while(rs.next()){
 			//array[rs.getInt("id")].
@@ -136,7 +136,7 @@ public class Client {
 		String[][] array = null;
 		String sql = "SELECT * FROM reservation  LEFT JOIN chambre on reservation.chambre_id = chambre.id LEFT JOIN hotel ON chambre.hotel_id = hotel.id WHERE client_id = "+this.getId()+" AND date_fin >= NOW()";
 		ResultSet rs = state.executeQuery(sql);
-	System.out.println(sql);
+	
 		HashMap<Integer, ArrayList<Object>> hashmap = new HashMap<Integer, ArrayList<Object>>();
 		while(rs.next()){
 			//array[rs.getInt("id")].
@@ -147,11 +147,13 @@ public class Client {
 			array2.add(3, rs.getInt("classe_id"));
 			array2.add(4, rs.getInt("categorie_id"));
 			array2.add(5, rs.getInt("facture_id"));
-			hashmap.put(rs.getInt("id"), array2);
 			
+			hashmap.put(rs.getInt("id"), array2);
+		
 			System.out.println("Réservation n°"+rs.getInt("id")+" - "+rs.getString("nom")+" - du "+rs.getString("date_deb")+" au "+rs.getString("date_fin"));
 			
 		}
+		
 		connexion.getConnect().close();
 		return hashmap;
 	}
@@ -236,7 +238,12 @@ public class Client {
 		tarif.setNb_jours(nb_jours);
 		int total_prestation = p.getTarif_jour() * nb_jours;
 		tarif.setTotal_prest(total_prestation);
-		tarif.createTarif(connexion);
+		int update = tarif.createTarif(connexion);
+		if(update != 0){
+			
+			f.updateFacture(connexion, tarif.getTotal_prest());
+		}
+		
 	}
 
 	

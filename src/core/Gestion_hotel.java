@@ -59,7 +59,9 @@ public class Gestion_hotel {
 			System.out.println("11. Etat d'occupation des chambres pour une date ou une période.");
 			System.out.println("12. Arrivées pour une date.");
 			System.out.println("13. Achat de prestations pour un séjour ou une réservation");
-			System.out.println("14. Quitter");
+			System.out.println("14. Consultation du chiffre d'affaires mensuel.");
+			System.out.println("15. Consultation du chiffre d'affaires annuel.");
+			System.out.println("16. Quitter");
 			reponse = input.nextInt();
 			shouldbreak=true;
 		}
@@ -67,6 +69,7 @@ public class Gestion_hotel {
 		switch(reponse){
 		case 1:
 			System.out.println("Liste des hôtels : ");
+			parc.listeHotel(connexion);
 			//Client c2 = new Client("bla", "blab", "bla","bla");
 			//c2.testFunction(connexion);
 			//afficherMenu(connexion, parc);
@@ -135,6 +138,14 @@ public class Gestion_hotel {
 			parc.afficherListePresta(connexion);
 			break;
 		case 14:
+			System.out.println("Consultation du chiffre d'affaires mensuel.");
+			parc.afficherMenuChiffre(connexion);
+			break;
+		case 15:
+			System.out.println("Consultation du chiffre d'affaires annuel.");
+			parc.afficherMenuChiffreParc(connexion);
+			break;
+		case 16:
 			System.out.println("Merci d'avoir utilisé l'interface de gestion hotelière.");
 			shouldbreak =true;
 			System.exit(0);
@@ -241,6 +252,7 @@ public class Gestion_hotel {
 			}
 			reservation.setDate_deb(date_debut);
 			reservation.setDate_fin(date_fin);
+			
 			reservation.editReservation(connexion, "dates");
 			menuEditReservation(connexion, parc, reservation);
 			break;
@@ -436,10 +448,14 @@ public class Gestion_hotel {
 		java.util.Date date_fin_temp= sdf.parse(date);
 		
 		Date date_fin = new Date(date_fin_temp.getTime());
+		int ok = parc.verifReservation(connexion, date_debut, date_fin, id_client);
 		if(date_debut.after(date_fin)){
 			System.out.println("Erreur : la date de début doit être antérieure à la date de fin. Retour au menu.");
 			afficherMenu(connexion, parc);
 			
+		}
+		if(ok < 0){
+			afficherMenu(connexion, parc);
 		}
 		
 		response = -1;

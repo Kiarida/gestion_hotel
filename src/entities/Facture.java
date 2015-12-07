@@ -1,7 +1,9 @@
 package entities;
 
-//import java.sql.Date;
-import java.util.Date;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+//import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -87,14 +89,187 @@ public class Facture {
 		this.id_client = client_id;
 	}
 	
-	public int createFacture(Connect connexion, Reservation r) throws SQLException{
+	public int createFacture(Connect connexion, Reservation r) throws SQLException, ParseException{
+		int diff = (int)((r.getDate_fin().getTime() - r.getDate_deb().getTime()) / (24 * 60 * 60 * 1000));
 		
+		Calendar cal_deb = Calendar.getInstance();
+		cal_deb.setTime(r.getDate_deb());
 		
+		int year_deb = cal_deb.get(Calendar.YEAR);
+		Calendar cal_fin = Calendar.getInstance();
+		cal_fin.setTime(r.getDate_fin());
 
-		Statement state = connexion.getConnect().createStatement();
+		int year_fin = cal_fin.get(Calendar.YEAR);
+		
+		Calendar cal_b_d = Calendar.getInstance();
+		Calendar cal_b_f = Calendar.getInstance();
+		Calendar cal_h_d = Calendar.getInstance();
+		Calendar cal_h_f = Calendar.getInstance();
+		
+		
+		cal_b_d.set(year_deb-1, Calendar.OCTOBER, 01);
+		cal_b_f.set(year_deb, Calendar.APRIL, 30);
+		cal_h_d.set(year_deb, Calendar.MAY, 01);
+		cal_h_f.set(year_deb, Calendar.SEPTEMBER, 30);
+		String sql_tarif = "";
+		
+		if(year_deb != year_fin){
+			cal_b_d.add(Calendar.YEAR, 1);
+			cal_b_f.add(Calendar.YEAR, 1);
+			cal_h_d.add(Calendar.YEAR, 1);
+			cal_h_f.add(Calendar.YEAR, 1);
+			if(cal_deb.compareTo(cal_b_f) <= 0 && cal_fin.compareTo(cal_b_f) <= 0){
+				System.out.println("basse saison");
+				
+				if(r.getNb_pers() == 1){
+					sql_tarif = "prix_b_1 * "+diff;
+				}
+				else{
+					sql_tarif = "prix_b_2 *"+diff;
+				}
+			
+				
+			}
+			else if(cal_deb.compareTo(cal_h_d) >= 0 && cal_fin.compareTo(cal_h_f) <= 0){
+				System.out.println("haute saison");
+				
+				if(r.getNb_pers() == 1){
+					sql_tarif = "prix_h_1 * "+diff;
+				}
+				else{
+					sql_tarif = "prix_h_2 * "+diff;
+				}
+			
+			}
+			else if(cal_deb.compareTo(cal_b_d) >= 0 && cal_fin.compareTo(cal_b_f) > 0){
+				System.out.println("debut bas + haute");
+				
+				int dif_b = (int)((cal_b_f.getTimeInMillis() - cal_deb.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				int dif_h = (int)((cal_fin.getTimeInMillis() - cal_h_d.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				System.out.println(dif_b);
+				System.out.println(dif_h);
+				if(r.getNb_pers() == 1){
+					sql_tarif = "((prix_b_1 *"+dif_b+")+(prix_h_1 *"+dif_h+")) ";
+				}
+				else{
+					sql_tarif = "((prix_b_2 *"+dif_b+")+(prix_h_2 *"+dif_h+"))";
+				}
+			
+			}
+			else if(cal_deb.compareTo(cal_h_d) >= 0 && cal_fin.compareTo(cal_h_f) > 0){
+				System.out.println("debut haut + bas");
+				int dif_b = (int)((cal_h_f.getTimeInMillis() - cal_deb.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				int dif_h = (int)((cal_fin.getTimeInMillis() - cal_b_d.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				System.out.println(dif_b);
+				System.out.println(dif_h);
+				if(r.getNb_pers() == 1){
+					sql_tarif = "((prix_b_1 *"+dif_b+")+(prix_h_1 *"+dif_h+"))";
+				}
+				else{
+					sql_tarif = "((prix_b_2 *"+dif_b+")+(prix_h_2 *)"+dif_h+"))";
+				}
+				
+			}
+		}
+		else{
+			
+			System.out.println(cal_deb.compareTo(cal_h_d));
+			System.out.println(cal_fin.compareTo(cal_h_f));
+			System.out.println(cal_h_d.get(Calendar.MONTH));
+			System.out.println(cal_h_d.get(Calendar.DAY_OF_WEEK));
+			System.out.println(cal_h_d.get(Calendar.YEAR));
+			System.out.println(cal_deb.get(Calendar.MONTH));
+			System.out.println(cal_deb.get(Calendar.DAY_OF_WEEK));
+			System.out.println(cal_deb.get(Calendar.YEAR));
+			
+			
+			if(cal_deb.compareTo(cal_b_f) <= 0 && cal_fin.compareTo(cal_b_f) <= 0){
+				System.out.println("basse saison");
+				if(r.getNb_pers() == 1){
+					sql_tarif = "prix_b_1 * "+diff;
+				}
+				else{
+					sql_tarif = "prix_b_2 *"+diff;
+				}
+			}
+			else if(cal_deb.compareTo(cal_h_d) >= 0 && cal_fin.compareTo(cal_h_f) <= 0){
+				if(r.getNb_pers() == 1){
+					sql_tarif = "prix_h_1 * "+diff;
+				}
+				else{
+					sql_tarif = "prix_h_2 * "+diff;
+				}
+			
+			}
+			else if(cal_deb.compareTo(cal_b_d) >= 0 && cal_deb.compareTo(cal_b_f) <= 0 && cal_fin.compareTo(cal_b_f) > 0){
+
+				
+				
+				int dif_b = (int)((cal_b_f.getTimeInMillis() - cal_deb.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				int dif_h = (int)((cal_fin.getTimeInMillis() - cal_h_d.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				System.out.println(dif_b);
+				System.out.println(dif_h);
+				if(r.getNb_pers() == 1){
+					sql_tarif = "((prix_b_1 *"+dif_b+")+(prix_h_1 *"+dif_h+"))";
+				}
+				else{
+					sql_tarif = "((prix_b_2 *"+dif_b+")+(prix_h_2 *"+dif_h+"))";
+				}
+			}
+			else if(cal_deb.compareTo(cal_h_d) >= 0 && cal_fin.compareTo(cal_h_f) > 0){
+				System.out.println("debut haut + bas");
+				int dif_b = (int)((cal_h_f.getTimeInMillis() - cal_deb.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				int dif_h = (int)((cal_fin.getTimeInMillis() - cal_b_d.getTimeInMillis()) / (24 * 60 * 60 * 1000));
+				System.out.println(dif_b);
+				System.out.println(dif_h);
+				if(r.getNb_pers() == 1){
+					sql_tarif = "((prix_b_1 *"+dif_b+")+(prix_h_1 *"+dif_h+"))";
+				}
+				else{
+					sql_tarif = "((prix_b_2 *"+dif_b+")+(prix_h_2 *"+dif_h+"))";
+				}
+			}
+		}
+			
+		String sql2 ="SELECT "+sql_tarif+" as total FROM tarif_chambre LEFT JOIN categorie ON categorie.id = tarif_chambre.categorie_id "
+				+ "LEFT JOIN classe ON classe.id = tarif_chambre.classe_id "
+				+ "LEFT JOIN hotel ON hotel.classe_id = classe.id "
+				+ "LEFT JOIN chambre ON chambre.hotel_id = hotel.id "
+				+ "WHERE chambre.id="+r.getId_chambre()+" AND tarif_chambre.categorie_id = chambre.categorie_id";
+			
+		Statement state = connexion.getConnect().prepareStatement(sql2);
+		System.out.println(sql2);
+		ResultSet rs = state.executeQuery(sql2);
+		
+		while(rs.next()){
+			this.total = rs.getInt(1);
+		}
+		//calcul saison 01/10 au 30/04 -> hiver 01/05 au 30/09 -> �t�
+		
+		return this.total;
+		 
+		//Statement state = connexion.getConnect().createStatement();
+		
+	
+	}
+
+	public void updateFacture(Connect connexion, int tot_pres) throws SQLException{
+		
+		connexion.connection();
+		String sql = "UPDATE facture SET total =total+"+tot_pres+" WHERE id="+this.id;
+		
+		Statement state = connexion.getConnect().prepareStatement(sql);
+		state.executeUpdate(sql);
+		
+	}
+	
+	public int insertFacture(Connect connexion) throws SQLException{
+		connexion.connection();
 		
 		String sql ="INSERT into facture (client_id, total, paye) "
 				+ "VALUES ("+this.id_client+", "+this.total+", "+this.paye+")";
+		
+		Statement state = connexion.getConnect().prepareStatement(sql);
 		state.executeUpdate(sql, state.RETURN_GENERATED_KEYS);
 		
 		ResultSet rs = state.getGeneratedKeys();
@@ -109,7 +284,6 @@ public class Facture {
 		}
 		return -1;
 	}
-	
 	
 	//Consultation de la facture du client, en ajoutant les prestations
 	public void consulterFacture(Connect connexion, int client_id)throws SQLException{
@@ -195,7 +369,7 @@ public class Facture {
 		 
 		
 		//calcul saison 01/10 au 30/04 -> hiver 01/05 au 30/09 -> �t�
-		 Date date = new Date();
+		 java.util.Date date = new java.util.Date();
 		 Calendar cal = Calendar.getInstance();
 		 cal.setTime(date_deb);
 		 int month = cal.get(Calendar.MONTH);

@@ -276,4 +276,16 @@ public class Hotel {
 		connexion.getConnect().close();
 		return hashmap;
 	}
+	
+	public void afficherChiffre(Connect connexion, int month, int year) throws SQLException{
+		connexion.connection();
+		String sql ="SELECT SUM(total) FROM facture INNER JOIN reservation ON reservation.facture_id = facture.id INNER JOIN chambre on chambre.id = reservation.chambre_id INNER JOIN hotel ON hotel.id =chambre.hotel_id WHERE (MONTH(reservation.date_fin) = "+month+" AND YEAR(reservation.date_fin) = "+year+") AND hotel_id ="+this.id+"";
+		Statement state = connexion.getConnect().createStatement();
+		ResultSet rs = state.executeQuery(sql);
+		while(rs.next()){
+			System.out.println("Chiffre d'affaire du mois "+month+" de l'année "+year+" : "+rs.getInt(1)+"€");
+		}
+		connexion.getConnect().close();
+		
+	}
 }
